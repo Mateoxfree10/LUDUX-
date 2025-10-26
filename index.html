@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>LUDUX - Sistema de Sellos</title>
+<style>
+  :root{--bg:#0e0e0e;--card:#111;--gold:#ffd700;--gold2:#f0b400;--muted:#bfbfbf}
+  body{background:var(--bg);color:#fff;font-family:Inter,Arial,Helvetica,sans-serif;margin:0;padding:16px;display:flex;justify-content:center}
+  .wrap{max-width:920px;width:100%}
+  header{display:flex;gap:12px;align-items:center;justify-content:flex-start}
+  header img{width:96px;height:auto;border-radius:10px}
+  header h1{color:var(--gold);margin:0;font-size:28px;letter-spacing:1px}
+  .small{color:var(--muted);font-size:13px}
+  .area{display:grid;grid-template-columns:1fr 420px;gap:16px;margin-top:14px}
+  .card{background:var(--card);padding:12px;border-radius:10px;box-shadow:0 6px 18px rgba(0,0,0,.5)}
+  input,select,button,textarea{width:100%;padding:8px;border-radius:8px;border:0;background:#222;color:#fff;font-size:14px}
+  button{background:var(--gold);color:#000;font-weight:700;cursor:pointer}
+  .mutebtn{background:#333;color:#fff}
+  .row{display:flex;gap:8px}
+  .row > *{flex:1}
+  .grid{display:flex;gap:8px;flex-wrap:wrap}
+  .seal{width:40px;height:40px;border-radius:50%;border:2px solid var(--gold);display:inline-flex;align-items:center;justify-content:center;margin:6px;color:var(--gold)}
+  .filled{background:var(--gold);color:#000}
+  #ruleta{width:260px;height:260px;border-radius:50%;margin:8px auto;border:6px solid var(--gold);position:relative;overflow:hidden;transition:transform 5s cubic-bezier(.33,1,.68,1)}
+  .seg{position:absolute;width:50%;height:50%;clip-path:polygon(0 0,100% 0,100% 100%);transform-origin:100% 100%}
+  #arrow{width:0;height:0;border-left:16px solid transparent;border-right:16px solid transparent;border-bottom:26px solid crimson;margin:8px auto}
+  pre{white-space:pre-wrap;word-break:break-word;background:#0b0b0b;padding:8px;border-radius:6px;color:#ddd;max-height:180px;overflow:auto}
+  .codesList img{max-width:90px;display:block;margin:6px 0}
+  table{width:100%;border-collapse:collapse}
+  td,th{padding:6px;border-bottom:1px solid #222;font-size:13px}
+  .tiny{font-size:12px;color:var(--muted)}
+  footer{color:var(--muted);font-size:12px;margin-top:12px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <!-- LOGO: coloca tu imagen en la MISMA CARPETA y con EXACTAMENTE este nombre: LUDUX.png -->
+    <img id="brandLogo" src="LUDUX.png" alt="Ludux logo" onerror="logoFallback()" />
+    <div>
+      <h1>LUDUX</h1>
+      <div class="small">Sellos digitales · Autorización por código QR · Ruleta de premios</div>
+    </div>
+  </header>
+
+  <div class="area">
+    <!-- IZQUIERDA: Interfaz cliente -->
+    <div>
+      <div class="card" id="loginCard">
+        <h3>Iniciar sesión (cliente)</h3>
+        <div class="tiny">Usuario y contraseña necesarios. Si escaneaste un QR, aparecerá el código en la URL.</div>
+        <input id="loginUser" placeholder="Usuario (ej: ana123)" autocomplete="off">
+        <input id="loginPass" placeholder="Contraseña" type="password" autocomplete="off">
+        <div class="row">
+          <button onclick="clientLogin()">Entrar</button>
+          <button class="mutebtn" onclick="showAdmin()">Admin</button>
+        </div>
+        <div id="loginMsg" class="tiny"></div>
+      </div>
+
+      <div class="card" id="clientCard" style="display:none">
+        <h3 id="welcome">Hola</h3>
+        <div class="tiny">Tarjeta de sellos</div>
+        <div id="sealBoard" style="margin:12px 0;text-align:center"></div>
+
+        <div class="tiny">Código detectado (si abriste con ?code=XXX):</div>
+        <input id="detectedCode" readonly>
+        <div class="tiny">Si el QR incluye el código y eres usuario correcto: al entrar, el sello se acreditará automáticamente.</div>
+        <div class="row">
+          <button onclick="requestManual()">Solicitar sello (si no se acreditó)</button>
+          <button class="mutebtn" onclick="clientLogout()">Salir</button>
+        </div>
+
+        <div id="clientMsg" class="tiny"></div>
+
+        <!-- Ruleta -->
+        <div id="ruletaSection" style="display:none;margin-top:12px;text-align:center">
+          <div id="arrow"></div>
+          <div id="ruleta"></div>
+          <div class="row" style="margin-top:8px">
+            <button onclick="spin()">Girar ruleta</button>
+            <button class="mutebtn" onclick="closePrize()">Cerrar</button>
+          </div>
+          <div id="prizeShow" class="tiny"></div>
+        </div>
+      </div>
+
+      <div class="card" id="requestsCard" style="display:none;margin-top:12px">
+        <h4>Solicitudes pendientes</h4>
+        <div id="pendingList" class="tiny"></div>
+      </div>
+    </div>
+
+    <!-- DERECHA: Admin -->
+    <div>
+      <div class="card" id="adminLoginCard">
+        <h3>Admin</h3>
+        <div class="tiny">Acceso al panel (PIN)</div>
+        <input id="adminPinInput" placeholder="PIN admin">
+        <div class="row">
+          <button onclick="adminLogin()">Entrar Admin</button>
+          <button class="mutebtn" onclick="toggleHelp()">Ayuda</button>
+        </div>
+        <div id="adminLoginMsg" class="tiny"></div>
+      </div>
+
+      <div class="card" id="adminPanel" style="display:none">
+        <h3>Panel Admin</h3>
+        <div class="tiny">PIN actual (cámbialo editando el archivo en la línea indicada)</div>
+        <div class="tiny" id="pinVisible"></div>
+
+        <hr style="border-color:#222">
+
+        <div><strong>Usuarios</strong></div>
+        <input id="newUserName" placeholder="Nuevo usuario (ej ana123)">
+        <input id="newUserPass" placeholder="Contraseña">
+        <button onclick="createUser()">Crear usuario</button>
+        <div id="userMsg" class="tiny"></div>
+
+        <hr style="border-color:#222">
+
+        <div><strong>Generar códigos QR (un solo uso)</strong></div>
+        <input id="codePrefix" placeholder="Prefijo (ej LUDX)">
+        <input id="codeQty" type="number" placeholder="Cantidad">
+        <select id="codeProduct">
+          <option value="Sello">Sello normal</option>
+          <option value="Brownie">Brownie</option>
+          <option value="Galleta">Galleta</option>
+          <option value="Papitas">Papitas</option>
+        </select>
+        <button onclick="generateCodes()">Generar códigos + QR</button>
+        <div id="codesOut" class="tiny codesList"></div>
+
+        <hr style="border-color:#222">
+
+        <div><strong>Autorizar código (usar inmediatamente)</strong></div>
+        <input id="authUser" placeholder="Usuario a acreditar">
+        <input id="authCode" placeholder="Código (ej LUDX-ABC123)">
+        <button onclick="authCode()">Autorizar ahora</button>
+        <div id="authMsg" class="tiny"></div>
+
+        <hr style="border-color:#222">
+
+        <div><strong>Estadísticas</strong></div>
+        <div class="tiny" id="statsArea"></div>
+
+        <hr style="border-color:#222">
+
+        <div><strong>Usuarios existentes</strong></div>
+        <pre id="usersList" class="tiny"></pre>
+
+        <div style="margin-top:10px">
+          <button class="mutebtn" onclick="adminLogout()">Salir Admin</button>
+        </div>
+      </div>
+
+      <div class="card" id="helpCard" style="display:none">
+        <h4>Ayuda rápida</h4>
+        <div class="tiny">
+          1) Cambia el PIN editando la línea indicada en el archivo.<br>
+          2) Coloca tu logo con EXACTAMENTE este nombre: <strong>LUDUX.png</strong> en la misma carpeta que este HTML.<br>
+          3) Para QR: la imagen que se muestra usa la API de Google Charts. Debes tener internet para descargar/imprimir el QR.<br>
+          4) Para que el QR funcione en celulares sin subir la página: lo ideal es <em>subir</em> el archivo a GitHub Pages o Netlify (opcional). Si lo abres con file:// en varios equipos, algunos navegadores no pasan parámetros ?code= en URLs file://. En ese caso usa la función "Autorizar ahora" del admin.
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <footer class="tiny">Si quieres que lo suba a un host gratis (GitHub Pages) y te doy URL pública, puedo guiarte.</footer>
+</div>
+
+<script>
+/* ================== CONFIG ==================
+   - Cambia aquí tu PIN ADMIN (edítalo directamente, guarda el archivo).
+   - Asegúrate que tu logo se llame EXACTAMENTE: LUDUX.png y esté en la MISMA carpeta.
+   ============================================ */
+const ADMIN_PIN = "1234"; // <-- CAMBIA ESTE PIN AQUÍ (ej: "7345")
+const MAX_SEALS = 10;
+
+/* ======= ESTRUCTURA (localStorage "ludux_store") ========
+store = {
+  users: { username: {pass:'pw', stamps:0, redemptions:0, purchases: [ {code, product, date} ] } },
+  codes: { 'LUDX-ABC123': {used:false, usedBy:'', usedAt:'', product:'Brownie'} },
+  pending: [ {user, code, at} ]  // solicitudes si quieres procesarlas manualmente
+}
+====================================================== */
+
+function storageRead(){ return JSON.parse(localStorage.getItem('ludux_store')||'{"users":{},"codes":{},"pending":[]}'); }
+function storageWrite(d){ localStorage.setItem('ludux_store', JSON.stringify(d)); }
+
+/* ---------- Logo fallback ---------- */
+function logoFallback(){ const img=document.getElementById('brandLogo'); img.src='https://via.placeholder.com/96?text=LUDUX'; }
+
+/* ---------- Admin UI ---------- */
+function showAdmin(){ document.getElementById('adminLoginCard').scrollIntoView({behavior:'smooth'}); }
+function adminLogin(){
+  const v = document.getElementById('adminPinInput').value;
+  if(v !== ADMIN_PIN){ document.getElementById('adminLoginMsg').textContent='PIN incorrecto.'; return; }
+  document.getElementById('adminLoginCard').style.display='none';
+  document.getElementById('adminPanel').style.display='block';
+  document.getElementById('helpCard').style.display='none';
+  document.getElementById('adminLoginMsg').textContent='';
+  document.getElementById('pinVisible').textContent = ADMIN_PIN;
+  renderAdmin();
+}
+function adminLogout(){
+  document.getElementById('adminPanel').style.display='none';
+  document.getElementById('adminLoginCard').style.display='block';
+}
+
+/* ---------- Users ---------- */
+function createUser(){
+  const u = (document.getElementById('newUserName').value||'').trim();
+  const p = (document.getElementById('newUserPass').value||'').trim();
+  if(!u||!p){ document.getElementById('userMsg').textContent='Completa usuario y contraseña.'; return; }
+  const s = storageRead();
+  if(s.users[u]){ document.getElementById('userMsg').textContent='Usuario ya existe.'; return; }
+  s.users[u] = {pass:p, stamps:0, redemptions:0, purchases:[]};
+  storageWrite(s);
+  document.getElementById('userMsg').textContent = 'Usuario creado: '+u;
+  document.getElementById('newUserName').value=''; document.getElementById('newUserPass').value='';
+  renderAdmin();
+}
+
+/* ---------- Generar códigos y QR ---------- */
+function generateCodes(){
+  const prefix = (document.getElementById('codePrefix').value||'LUDX').toUpperCase();
+  let qty = parseInt(document.getElementById('codeQty').value) || 0;
+  const product = document.getElementById('codeProduct').value || 'Sello';
+  if(qty<=0){ document.getElementById('codesOut').textContent='Cantidad inválida'; return; }
+  const s = storageRead();
+  const created = [];
+  for(let i=0;i<qty;i++){
+    const r = Math.random().toString(36).substring(2,8).toUpperCase();
+    const code = prefix + '-' + r;
+    s.codes[code] = {used:false, usedBy:'', usedAt:'', product:product};
+    created.push(code);
+  }
+  storageWrite(s);
+  // Mostrar códigos y QR (la imagen viene de Google Chart API)
+  const out = document.getElementById('codesOut');
+  out.innerHTML = '';
+  created.forEach(c=>{
+    // URL objetivo: si subes la página a un servidor, reemplaza baseURL por tu URL pública
+    const baseURL = window.location.href.split('?')[0]; // base del archivo actual
+    const target = baseURL + '?code=' + encodeURIComponent(c);
+    const qrURL = 'https://chart.googleapis.com/chart?cht=qr&chs=300x300&chl=' + encodeURIComponent(target);
+    const div = document.createElement('div');
+    div.innerHTML = `<div style="margin-bottom:8px"><strong>${c}</strong> — ${product}<br>
+      <img src="${qrURL}" alt="QR ${c}" /><br>
+      <a href="${qrURL}" target="_blank" class="tiny">Descargar QR</a>
+    </div>`;
+    out.appendChild(div);
+  });
+  renderAdmin();
+}
+
+/* ---------- Autorizar/usar código (admin) ---------- */
+function authCode(){
+  const user = (document.getElementById('authUser').value||'').trim();
+  const code = (document.getElementById('authCode').value||'').trim().toUpperCase();
+  if(!user||!code){ document.getElementById('authMsg').textContent='Faltan datos'; return; }
+  const s = storageRead();
+  if(!s.users[user]){ document.getElementById('authMsg').textContent='Usuario no existe'; return; }
+  if(!s.codes[code]){ document.getElementById('authMsg').textContent='Código no válido'; return; }
+  if(s.codes[code].used){ document.getElementById('authMsg').textContent='Código ya usado'; return; }
+  // aplicar sello
+  s.codes[code].used = true;
+  s.codes[code].usedBy = user;
+  s.codes[code].usedAt = new Date().toLocaleString();
+  // sumar sello y registrar compra/product
+  s.users[user].stamps = (s.users[user].stamps||0) + 1;
+  s.users[user].purchases = s.users[user].purchases || [];
+  s.users[user].purchases.push({code:code, product:s.codes[code].product, date:new Date().toLocaleString()});
+  if(s.codes[code].product && s.codes[code].product !== 'Sello') s.users[user].redemptions = (s.users[user].redemptions||0) + 1;
+  storageWrite(s);
+  document.getElementById('authMsg').textContent = 'Código usado y sello agregado a ' + user;
+  document.getElementById('authUser').value=''; document.getElementById('authCode').value='';
+  renderAdmin();
+  // si el usuario está conectado, actualizar su vista:
+  if(window.currentUser === user){ renderUserCard(); checkForAuto(); }
+}
+
+/* ---------- Render Admin ---------- */
+function renderAdmin(){
+  const s = storageRead();
+  document.getElementById('usersList').textContent = Object.keys(s.users).length ? 
+    Object.keys(s.users).map(u=>`${u} — sellos: ${s.users[u].stamps || 0} — canjes: ${s.users[u].redemptions || 0}`).join('\n') : '(sin usuarios)';
+  // stats
+  const totalUsers = Object.keys(s.users).length;
+  const totalCodes = Object.keys(s.codes).length;
+  const usedCodes = Object.keys(s.codes).filter(c=>s.codes[c].used).length;
+  document.getElementById('statsArea').innerHTML = `Usuarios: ${totalUsers} <br> Códigos totales: ${totalCodes} — usados: ${usedCodes}`;
+  // pending
+  const pend = s.pending || [];
+  document.getElementById('pendingList').textContent = pend.length ? pend.map(p=>`${p.user} pidió ${p.code} @ ${p.at}`).join('\n') : '(sin solicitudes)';
+}
+
+/* ---------- Clientes: login ---------- */
+function clientLogin(){
+  const u = (document.getElementById('loginUser').value||'').trim();
+  const p = (document.getElementById('loginPass').value||'').trim();
+  const s = storageRead();
+  if(!u||!p){ document.getElementById('loginMsg').textContent='Completa user y pass'; return; }
+  if(!s.users[u]){ document.getElementById('loginMsg').textContent='Usuario no existe'; return; }
+  if(s.users[u].pass !== p){ document.getElementById('loginMsg').textContent='Contraseña incorrecta'; return; }
+  // login ok
+  window.currentUser = u;
+  document.getElementById('loginCard').style.display='none';
+  document.getElementById('clientCard').style.display='block';
+  document.getElementById('clientMsg').textContent='';
+  renderUserCard();
+  // detect code in URL param and try auto-apply
+  checkForAuto();
+}
+
+function clientLogout(){ window.currentUser=''; document.getElementById('clientCard').style.display='none'; document.getElementById('loginCard').style.display='block'; document.getElementById('loginUser').value=''; document.getElementById('loginPass').value=''; }
+
+/* ---------- Render user card ---------- */
+function renderUserCard(){
+  const s = storageRead();
+  const u = window.currentUser;
+  const info = s.users[u];
+  document.getElementById('welcome').textContent = 'Hola, ' + u + ' 🧸';
+  const board = document.getElementById('sealBoard');
+  board.innerHTML = '';
+  const stamps = info.stamps || 0;
+  for(let i=0;i<MAX_SEALS;i++){
+    const d = document.createElement('div');
+    d.className = 'seal' + (i < stamps ? ' filled' : '');
+    d.textContent = i < stamps ? '✓' : '';
+    board.appendChild(d);
+  }
+  document.getElementById('clientMsg').textContent = `Tienes ${stamps} / ${MAX_SEALS} sellos. Canjes: ${info.redemptions || 0}`;
+  // detected code field keep updated:
+  const urlCode = getParam('code') || '';
+  document.getElementById('detectedCode').value = urlCode;
+  // show ruleta if ready
+  if(stamps >= MAX_SEALS){ document.getElementById('ruletaSection').style.display='block'; } else { document.getElementById('ruletaSection').style.display='none'; }
+}
+
+/* ---------- Auto-apply when login + code param exists ---------- */
+function checkForAuto(){
+  const code = (getParam('code')||'').toUpperCase();
+  if(!code) return;
+  const s = storageRead();
+  if(!s.codes[code]){ document.getElementById('clientMsg').textContent = 'Código inválido.'; return; }
+  if(s.codes[code].used){ document.getElementById('clientMsg').textContent = 'Código ya usado.'; return; }
+  // if logged in and user matches
+  const u = window.currentUser;
+  if(!u){ document.getElementById('clientMsg').textContent = 'Inicia sesión para usar el código.'; return; }
+  // autorizar automáticamente: el código sirve como permiso
+  s.codes[code].used = true;
+  s.codes[code].usedBy = u;
+  s.codes[code].usedAt = new Date().toLocaleString();
+  s.users[u].stamps = (s.users[u].stamps||0) + 1;
+  s.users[u].purchases = s.users[u].purchases || [];
+  s.users[u].purchases.push({code:code, product:s.codes[code].product, date:new Date().toLocaleString()});
+  if(s.codes[code].product && s.codes[code].product !== 'Sello') s.users[u].redemptions = (s.users[u].redemptions||0) + 1;
+  storageWrite(s);
+  document.getElementById('clientMsg').textContent = 'Código aplicado automáticamente. Se añadió 1 sello.';
+  renderUserCard();
+  renderAdmin();
+}
+
+/* ---------- If auto apply fails, user can request admin ---------- */
+function requestManual(){
+  const code = (document.getElementById('detectedCode').value||'').trim().toUpperCase();
+  const u = window.currentUser;
+  if(!u){ document.getElementById('clientMsg').textContent='Inicia sesión primero.'; return; }
+  const s = storageRead();
+  s.pending = s.pending || [];
+  s.pending.push({user:u, code:code || '(sin código)', at:new Date().toLocaleString()});
+  storageWrite(s);
+  document.getElementById('clientMsg').textContent='Solicitud enviada. Pide al vendedor que autorice en Admin.';
+  renderAdmin();
+}
+
+/* ---------- Admin: autorizar desde admin (usa authCode) ---------- */
+
+/* ---------- Utility: get URL param ---------- */
+function getParam(key){
+  const qs = window.location.search.replace('?', '');
+  if(!qs) return '';
+  const params = new URLSearchParams(qs);
+  return params.get(key) || '';
+}
+
+/* ---------- Ruleta ---------- */
+const prizes = ["🍪 Galleta gratis","🍫 Brownie especial","🥔 Papitas gratis","🎁 Sorpresa LUDUX","💰 50% descuento"];
+function createWheel(){
+  const wheel = document.getElementById('ruleta');
+  wheel.innerHTML = '';
+  const n = prizes.length; const ang = 360 / n;
+  for(let i=0;i<n;i++){
+    const seg = document.createElement('div');
+    seg.className='seg';
+    seg.style.background = i%2? 'var(--gold2)' : 'var(--gold)';
+    seg.style.transform = `rotate(${i*ang}deg) skewY(${90-ang}deg)`;
+    // texto dentro (rotado)
+    const label = document.createElement('div');
+    label.style.position='absolute';
+    label.style.width='50%';
+    label.style.left='50%';
+    label.style.top='50%';
+    label.style.transform = `rotate(${(i+0.5)*ang}deg) translateX(40px)`;
+    label.style.transformOrigin='0 0';
+    label.style.color='#111';
+    label.style.fontWeight='700';
+    label.style.fontSize='13px';
+    label.textContent = prizes[i];
+    wheel.appendChild(seg);
+    wheel.appendChild(label);
+ 
