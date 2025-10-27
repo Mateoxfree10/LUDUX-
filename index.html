@@ -219,9 +219,9 @@
     <div class="area">
         <div id="leftColumn">
             
-            <div class="card" id="loginCard">
+                       <div class="card" id="loginCard">
                 <h3>1. Iniciar sesión (cliente)</h3>
-                <input id="loginUser" placeholder="Correo Electrónico" type="email" autocomplete="email">
+                <input id="loginUser" placeholder="Nombre de Usuario" type="name" autocomplete="name">
                 <input id="loginPass" placeholder="Contraseña" type="password" autocomplete="current-password">
                 <div class="row">
                     <button onclick="clientLogin()">Entrar</button>
@@ -231,8 +231,8 @@
 
             <div class="card" id="registerCard" style="margin-top:12px">
                 <h3>2. Registrarse</h3>
-                <input id="regUser" placeholder="Correo Electrónico (Será tu ID de login)" type="email" autocomplete="email">
-                <input id="regPass" placeholder="Contraseña (Mínimo 6 caracteres)" type="password" autocomplete="new-password">
+                <input id="regUser" placeholder="Nombre de Usuario (Será tu ID de login)" type="name" autocomplete="name">
+                <input id="regPass" placeholder="Contraseña" type="password" autocomplete="new-password">
                 <button onclick="clientRegister()">Crear Cuenta</button>
                 <div id="regMsg" class="small" style="margin-top:10px"></div>
             </div>
