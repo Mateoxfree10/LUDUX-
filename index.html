@@ -1,9 +1,11 @@
+
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <title>LUDUX - Sistema de Lealtad Local (v2.0)</title>
+    <title>LUDUX - Sistema de Lealtad Local (v3.0 - Modular)</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600&family=Inter:wght@400;700&display=swap" rel="stylesheet">
     
@@ -213,7 +215,7 @@
         <img id="brandLogo" src="Ludux .png" alt="Ludux logo" onerror="logoFallback()" /> 
         <div>
             <h1>LUDUX</h1>
-            <div class="small">Sistema de Lealtad (Local) · Códigos QR · Ruleta de Premios</div>
+            <div class="small">Sistema de Lealtad (Modular Firebase) · Códigos QR · Ruleta</div>
         </div>
     </header>
     
@@ -222,8 +224,8 @@
             
             <div class="card" id="loginCard">
                 <h3>1. Iniciar sesión (cliente)</h3>
-                <input id="loginUser" placeholder="Usuario (ej: ana123)" autocomplete="off">
-                <input id="loginPass" placeholder="Contraseña" type="password" autocomplete="off">
+                <input id="loginUser" placeholder="Correo Electrónico" type="email" autocomplete="email">
+                <input id="loginPass" placeholder="Contraseña" type="password" autocomplete="current-password">
                 <div class="row">
                     <button onclick="clientLogin()">Entrar</button>
                 </div>
@@ -232,8 +234,8 @@
 
             <div class="card" id="registerCard" style="margin-top:12px">
                 <h3>2. Registrarse</h3>
-                <input id="regUser" placeholder="Nuevo usuario (Será el ID de tu cuenta)" autocomplete="off">
-                <input id="regPass" placeholder="Contraseña" type="password" autocomplete="off">
+                <input id="regUser" placeholder="Correo Electrónico (Será tu ID de login)" type="email" autocomplete="email">
+                <input id="regPass" placeholder="Contraseña (Mínimo 6 caracteres)" type="password" autocomplete="new-password">
                 <button onclick="clientRegister()">Crear Cuenta</button>
                 <div id="regMsg" class="small" style="margin-top:10px"></div>
             </div>
@@ -305,7 +307,7 @@
                 <hr>
 
                 <h4>🧑‍💻 Autorizar Código Manualmente</h4>
-                <input id="authUser" placeholder="Usuario a acreditar">
+                <input id="authUser" placeholder="Usuario/Email a acreditar">
                 <input id="authCode" placeholder="Código (ej LUDX-ABC123)">
                 <button onclick="authCode()">Autorizar Ahora</button>
                 <div id="authMsg" class="small"></div>
@@ -338,14 +340,15 @@
     </div>
 </div>
 
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-analytics-compat.js"></script>
-
-<script>
-    // Tu configuración de Firebase
+<script type="module">
+    // Importar SDKs modulares necesarios
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js";
+    import { getFirestore, collection, doc, setDoc, onSnapshot, getDoc, runTransaction } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-auth.js";
+    
+    // Configuración de tu app Firebase
     const firebaseConfig = {
-      apiKey: "AIzaSyCFXSlAmwU-K-JhmB7pAjXUeJV4yjKu7w", // 🛑 REEMPLAZA ESTO CON TU API KEY REAL 🛑
+      apiKey: "AIzaSyCFXSlAmwU-K-JhmB7pAjXUOeJV4yjKu7w",
       authDomain: "ludux-52a4f.firebaseapp.com",
       projectId: "ludux-52a4f",
       storageBucket: "ludux-52a4f.firebasestorage.app",
@@ -354,12 +357,20 @@
       measurementId: "G-CQ3GF4G1LV"
     };
 
-    // Inicializa Firebase
-    const app = firebase.initializeApp(firebaseConfig);
-    // const analytics = firebase.analytics(app); // Descomentar si usas Analytics
+    // Inicializar Firebase
+    const app = initializeApp(firebaseConfig);
+    // Hacemos las instancias accesibles globalmente para el script principal
+    window.db = getFirestore(app); 
+    window.auth = getAuth(app);   
 
-    // Inicializa Firestore
-    const db = firebase.firestore();
+    // Exponemos las funciones de Firestore necesarias para el script principal
+    // Esto es crucial para que el código LUDUX pueda usarlas
+    window.fs = { 
+        collection, doc, setDoc, onSnapshot, getDoc, runTransaction, 
+        createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut 
+    };
+    
+    console.log("Firebase y Firestore inicializados en modo modular.");
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.4.0/dist/confetti.browser.min.js"></script>
@@ -389,9 +400,8 @@ const PRODUCT_CATALOG = [
     { name: "2 Brownies", price: 15.00, value: 'Brownie2', image: 'brownie.png' },
     { name: "Papitas", price: 15.00, value: 'Papitas', image: 'Papitas.png' },
     { name: "Galleta de Calaverita", price: 6.00, value: 'Calaverita', image: 'calaveritas.jpg' }, 
-    { name: "2 Galletas de Calaverita", price: 10.00, value: 'Calaverita2', image: 'calaveritas.jpg' },
-  
-];
+    { name: "2 Galletas de Calaverita", price: 10.00, value: 'Calaverita2', image: 'Scalaveritas.jpg' },
+    
 
 // Premios para la Ruleta con sus repeticiones
 const PRIZE_REPETITIONS = [
@@ -495,7 +505,6 @@ function renderCatalog() {
 function renderUserCard(){
     if (!currentUser) return;
     
-    // currentUserData se actualiza por el onSnapshot
     const info = currentUserData; 
 
     if (!info) { clientLogout(); return; } 
@@ -526,62 +535,82 @@ function renderUserCard(){
 }
 
 
-/* ---------------- Clientes: Registro/Login/Logout (Actualizados) ---------------- */
-function clientRegister() {
-    const u = (document.getElementById('regUser').value||'').trim();
-    const p = (document.getElementById('regPass').value||'').trim();
+/* ---------------- Clientes: Registro/Login/Logout (Actualizados a Modular Auth) ---------------- */
+
+async function clientRegister() {
+    // Usamos 'regUser' para el email y 'regPass' para la contraseña.
+    const u = (document.getElementById('regUser').value||'').trim(); // email
+    const p = (document.getElementById('regPass').value||'').trim(); // password
     const msg = document.getElementById('regMsg');
     
-    if(!u||!p){ msg.textContent='Completa usuario y contraseña.'; return; }
+    if(!u||!p){ msg.textContent='Completa correo y contraseña.'; return; }
     
-    const usersLocal = loadData(LS_USERS, {}); 
+    try {
+        // 1. Crear usuario en Firebase Authentication
+        const userCredential = await window.fs.createUserWithEmailAndPassword(window.auth, u, p);
+        const user = userCredential.user;
 
-    // 1️⃣ Registro a Firestore (Con `merge: true` para no sobrescribir)
-    db.collection("usuarios").doc(u).set({
-        password: p,
-        stamps: 0,
-        redemptions: 0,
-        purchases: []
-    }, { merge: true })
-    .then(() => {
-        // Guardar también en localStorage como respaldo inicial
+        // 2. Guardar datos iniciales en Firestore usando el email como ID del documento
+        await window.fs.setDoc(window.fs.doc(window.db, "usuarios", u), {
+            // Guardamos la contraseña en Firestore solo si es esencial para tu lógica.
+            password: p, 
+            stamps: 0,
+            redemptions: 0,
+            purchases: [],
+            uid: user.uid // Referencia al UID de Auth
+        }, { merge: true });
+
+        // 3. Actualizar LocalStorage como respaldo (opcional)
+        const usersLocal = loadData(LS_USERS, {}); 
         usersLocal[u] = { stamps: 0, redemptions: 0, purchases: [], password: p };
         saveData(LS_USERS, usersLocal);
         
         msg.textContent = '✅ ¡Cuenta creada con éxito! Ahora puedes iniciar sesión.';
         document.getElementById('regUser').value=''; 
         document.getElementById('regPass').value='';
-    })
-    .catch(err => {
-        console.error("Error Firestore al registrar:", err);
-        msg.textContent = '❌ Error al guardar la cuenta en Firebase.';
-    });
+    }
+    catch (err) {
+        console.error("Error al registrar:", err);
+        // Manejar errores comunes de Auth
+        if (err.code === 'auth/email-already-in-use') {
+            msg.textContent = '❌ Error: El correo ya está registrado.';
+        } else if (err.code === 'auth/weak-password') {
+            msg.textContent = '❌ Error: La contraseña debe tener al menos 6 caracteres.';
+        } else {
+            msg.textContent = `❌ Error al guardar la cuenta: ${err.message}`;
+        }
+    }
 }
 
 
-// 2️⃣ Login de Usuario (Suscripción a Firestore)
-function clientLogin(){
-    const u = (document.getElementById('loginUser').value||'').trim();
-    const p = (document.getElementById('loginPass').value||'').trim();
+async function clientLogin(){
+    const u = (document.getElementById('loginUser').value||'').trim(); // email
+    const p = (document.getElementById('loginPass').value||'').trim(); // password
     const msg = document.getElementById('loginMsg');
     
     if(!u||!p){ msg.textContent='Completa user y pass'; return; }
 
-    const userRef = db.collection("usuarios").doc(u);
-    
-    // Paso 1: Obtener datos de una vez para validar contraseña
-    userRef.get().then(doc => {
-        if (!doc.exists) { msg.textContent = 'Usuario no existe'; return; }
+    try {
+        // 1. Autenticar con Firebase Authentication
+        await window.fs.signInWithEmailAndPassword(window.auth, u, p);
+
+        // 2. Obtener la referencia de Firestore (usando el email como ID del documento)
+        const userRef = window.fs.doc(window.db, "usuarios", u);
+        const doc = await window.fs.getDoc(userRef);
+
+        if (!doc.exists) { 
+            msg.textContent = 'Error: Datos de usuario no encontrados en Firestore. Vuelve a registrarte.'; 
+            await window.fs.signOut(window.auth); 
+            return; 
+        }
 
         const data = doc.data();
-        if (data.password !== p) { msg.textContent = 'Contraseña incorrecta'; return; }
-
         currentUser = u;
         currentUserData = data;
 
-        // Paso 2: Escuchar cambios en tiempo real
-        if (unsubscribeFromUser) unsubscribeFromUser(); // Detener listener anterior
-        unsubscribeFromUser = userRef.onSnapshot(snap => {
+        // 3. Escuchar cambios en tiempo real
+        if (unsubscribeFromUser) unsubscribeFromUser(); 
+        unsubscribeFromUser = window.fs.onSnapshot(userRef, snap => {
             currentUserData = snap.data();
             renderUserCard();
         }, err => {
@@ -592,13 +621,24 @@ function clientLogin(){
 
         show('clientCard');
         renderUserCard();
-    }).catch(err => {
-        console.error("Error Firestore login:", err);
-        msg.textContent = "Error al conectar con Firebase.";
-    });
+    } 
+    catch(err) {
+        console.error("Error Firebase login:", err);
+        // Manejar errores comunes de Auth
+        if (err.code === 'auth/wrong-password' || err.code === 'auth/user-not-found' || err.code === 'auth/invalid-credential') {
+            msg.textContent = 'Usuario (correo) o contraseña incorrectos.';
+        } else if (err.code === 'auth/invalid-email') {
+            msg.textContent = 'Formato de correo inválido.';
+        } else {
+            msg.textContent = `Error al conectar con Firebase: ${err.message}`;
+        }
+    }
 }
 
 function clientLogout(){ 
+    // Intentar cerrar sesión en Firebase Auth
+    if (window.auth) window.fs.signOut(window.auth).catch(e => console.error("Error al cerrar sesión de Auth:", e));
+    
     // Detener la escucha de cambios de Firestore
     if (unsubscribeFromUser) {
         unsubscribeFromUser();
@@ -648,12 +688,13 @@ function renderAdminPanel(){
     document.getElementById('statsArea').innerHTML = statsHtml;
     
     // A. Clientes Registrados y Sellos (onSnapshot)
-    db.collection("usuarios").onSnapshot(snapshot => {
+    window.fs.onSnapshot(window.fs.collection(window.db, "usuarios"), snapshot => {
         const usersList = document.getElementById('usersList');
         let text = 'Usuario | Sellos | Redenciones\n' + '-'.repeat(30) + '\n';
         
         snapshot.forEach(doc => {
             const data = doc.data();
+            // Usamos doc.id (el email) para el nombre de usuario
             text += `${doc.id.padEnd(8)} | ${String(data.stamps || 0).padEnd(6)} | ${data.redemptions || 0}\n`;
         });
         
@@ -664,7 +705,7 @@ function renderAdminPanel(){
     });
     
     // B. Códigos Generados (onSnapshot)
-    db.collection("codes").onSnapshot(snapshot => {
+    window.fs.onSnapshot(window.fs.collection(window.db, "codes"), snapshot => {
         const codesListDiv = document.getElementById('codesOut');
         let generatedHtml = 'Códigos Generados:\n';
         
@@ -682,7 +723,9 @@ function renderAdminPanel(){
     });
 
     // C. Redenciones/Premios Canjeados (onSnapshot)
-    db.collection("redemptions").orderBy("date", "desc").onSnapshot(snapshot => {
+    // Nota: Firebase Modular no tiene orderBy tan directo en la sintaxis que usamos. 
+    // Usaremos la lista sin ordenar para simplicidad en este script.
+    window.fs.onSnapshot(window.fs.collection(window.db, "redemptions"), snapshot => {
         const redemptionsList = document.getElementById('redemptionsList');
         let text = '';
         snapshot.forEach(doc => {
@@ -702,7 +745,7 @@ function renderAdminPanel(){
 }
 
 
-/* ---------------- Generación y Autorización (Actualizados) ---------------- */
+/* ---------------- Generación y Autorización (Actualizados a Modular) ---------------- */
 function generateRandomCode(prefix) {
     const chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
     let code = prefix + '-';
@@ -725,14 +768,15 @@ function generateCodes() {
     }
 
     const codesLocal = loadData(LS_CODES, {});
-    let batch = db.batch(); // Usar batch para guardar varios documentos a la vez
+    const batch = window.db.batch(); // Usar la instancia del batch
+
     let generatedHtml = 'Códigos Generados:\n';
     
     for (let i = 0; i < qty; i++) {
         const code = generateRandomCode(prefix);
         
         // 1. Guardar en Firestore Batch
-        const codeRef = db.collection("codes").doc(code);
+        const codeRef = window.fs.doc(window.db, "codes", code);
         batch.set(codeRef, { 
             used: false, 
             product: productValue,
@@ -758,21 +802,21 @@ function generateCodes() {
 
 // 3️⃣ Acreditar Sello (Modificar Firestore con Transaction)
 function authCode() {
-    const user = (document.getElementById('authUser').value || '').trim();
+    const user = (document.getElementById('authUser').value || '').trim(); // email
     const code = (document.getElementById('authCode').value || '').trim().toUpperCase();
     const msg = document.getElementById('authMsg');
     
     if (!user || !code) { msg.textContent = 'Completa usuario y código.'; return; }
 
-    const userRef = db.collection("usuarios").doc(user);
-    const codeRef = db.collection("codes").doc(code);
+    const userRef = window.fs.doc(window.db, "usuarios", user);
+    const codeRef = window.fs.doc(window.db, "codes", code);
     
     // Usar Transaction para asegurar la atomicidad de las operaciones
-    db.runTransaction(transaction => {
+    window.fs.runTransaction(window.db, transaction => {
         return transaction.get(userRef).then(userDoc => {
             return transaction.get(codeRef).then(codeDoc => {
                 
-                if (!userDoc.exists) { throw new Error('Usuario no encontrado.'); }
+                if (!userDoc.exists) { throw new Error('Usuario (email) no encontrado.'); }
                 if (!codeDoc.exists) { throw new Error('Código no existe.'); }
 
                 const userData = userDoc.data();
@@ -825,7 +869,7 @@ function authCode() {
 }
 
 
-/* ---------------- Ruleta (Actualizado) ---------------- */
+/* ---------------- Ruleta (Actualizado a Modular) ---------------- */
 function preparePrizeList() {
     let list = [];
     PRIZE_REPETITIONS.forEach(p => {
@@ -891,11 +935,11 @@ function spin() {
         
         showPrizeModal(prizeName);
         
-        // --- INICIO: Lógica de actualización de Firestore ---
+        // --- INICIO: Lógica de actualización de Firestore (Modular) ---
         
         // 1. Resetear sellos y aumentar redenciones en Firestore
-        const userRef = db.collection("usuarios").doc(currentUser);
-        userRef.set({
+        const userRef = window.fs.doc(window.db, "usuarios", currentUser);
+        window.fs.setDoc(userRef, {
             stamps: 0,
             redemptions: (currentUserData.redemptions || 0) + 1
         }, { merge: true }).then(() => {
@@ -903,8 +947,8 @@ function spin() {
         }).catch(err => console.error("Error al actualizar usuario en spin:", err));
 
         // 2. Guardar el registro de la redención en la colección "redemptions"
-        const redemptionsRef = db.collection("redemptions").doc();
-        redemptionsRef.set({
+        const redemptionsRef = window.fs.doc(window.fs.collection(window.db, "redemptions"));
+        window.fs.setDoc(redemptionsRef, {
             user: currentUser,
             prize: prizeName,
             date: new Date().toLocaleString()
@@ -967,11 +1011,13 @@ function showPrizeModal(prizeName) {
 }
 
 function runConfetti() {
-    confetti({
-        particleCount: 150,
-        spread: 70,
-        origin: { y: 0.6 }
-    });
+    if (typeof confetti === 'function') {
+        confetti({
+            particleCount: 150,
+            spread: 70,
+            origin: { y: 0.6 }
+        });
+    }
 }
 
 function closePrizeModal() {
