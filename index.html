@@ -1,1062 +1,262 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <title>LUDUX - Sistema de Lealtad Local (v3.2 - Catálogo Fijo)</title>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600&family=Inter:wght400;700&display=swap" rel="stylesheet">
-    
-    <style>
-        /* === Variables y Estilos Base === */
-        :root{
-            --bg:#0e0e0e;
-            --card-bg:#1a1a1a;
-            --gold:#ffd700;
-            --gold-light:#ffeb8a;
-            --text-muted:#a0a0a0;
-            --shadow-dark: 0 10px 30px rgba(0,0,0,0.6);
-            --shadow-light: 0 4px 15px rgba(255,215,0,0.2);
-            --radius: 12px;
-        }
-        body{
-            background:var(--bg);
-            color:#fff;
-            font-family:'Inter', Arial, sans-serif;
-            margin:0;
-            padding:20px;
-            display:flex;
-            justify-content:center;
-            min-height:100vh;
-        }
-        .wrap{ max-width:1000px; width:100%; }
-        header{
-            display:flex;
-            gap:16px;
-            align-items:center;
-            justify-content:flex-start;
-            margin-bottom: 20px;
-        }
-        header img{
-            width:120px; 
-            height:auto;
-            border-radius:15px;
-            box-shadow: var(--shadow-light);
-            object-fit: cover; 
-        }
-        header h1{
-            font-family: 'Cormorant Garamond', serif;
-            color:var(--gold);
-            margin:0;
-            font-size:48px;
-            letter-spacing:3px;
-            text-shadow: 0 0 10px rgba(255,215,0,0.5);
-        }
-        .small{ color:var(--text-muted); font-size:14px; }
-        .area{
-            display:grid;
-            grid-template-columns: 1fr 480px;
-            gap:24px;
-            margin-top:20px;
-        }
-        .card{
-            background:var(--card-bg);
-            padding:20px;
-            border-radius:var(--radius);
-            box-shadow:var(--shadow-dark);
-            border: 1px solid #333;
-            transition: all 0.3s ease;
-        }
-        .card:hover{ border-color: var(--gold); }
-        input, select, button, textarea{
-            width:100%;
-            padding:12px;
-            margin-bottom:10px;
-            border-radius:8px;
-            border:1px solid #333;
-            background:#272727;
-            color:#fff;
-            font-size:16px;
-            box-sizing:border-box;
-        }
-        button{
-            background:var(--gold);
-            color:#1a1a1a;
-            font-weight:700;
-            cursor:pointer;
-            border:none;
-            transition: background 0.2s, transform 0.1s;
-        }
-        button:hover{ background:var(--gold-light); }
-        button:active{ transform: scale(0.99); }
-        .mutebtn{ background:#333; color:#fff; }
-        .row{ display:flex; gap:10px; }
-        .row > *{ flex:1; }
-        hr{ border-color:#333; margin:15px 0; }
-        
-        /* === Catálogo de Productos (Ajuste para visibilidad) === */
-        .catalog-container {
-            /* Eliminamos overflow-y: visible para forzar scroll */
-            border: 1px solid #333;
-            border-radius: var(--radius);
-            margin-top: 15px;
-            padding: 10px;
-            background: #111;
-            max-height: 400px;
-            overflow-y: auto; /* Forzamos scroll si es necesario */
-            min-height: 50px; /* Aseguramos que tenga una altura mínima */
-        }
-        .catalog-item {
-            display: flex;
-            align-items: center;
-            padding: 10px 0;
-            border-bottom: 1px solid #272727;
-        }
-        .catalog-item:last-child { border-bottom: none; }
-        .catalog-item img {
-            width: 70px;
-            height: 70px;
-            object-fit: cover;
-            border-radius: 6px;
-            margin-right: 15px;
-            box-shadow: 0 0 5px rgba(255,255,255,0.1);
-        }
-        .item-info { flex-grow: 1; }
-        .item-name { font-weight: 700; color: #fff; font-size: 16px; }
-        .item-value { font-size: 14px; color: var(--gold); font-weight: bold; }
-        
-        /* === Resto de estilos CSS (sin cambios) === */
-        .seal-board{ display:flex; flex-wrap:wrap; justify-content:center; margin:20px 0; gap: 10px; }
-        .seal{ width:60px; height:60px; border-radius:50%; border:3px dashed var(--text-muted); display:flex; align-items:center; justify-content:center; background: #272727; color:var(--text-muted); font-size:28px; box-shadow: inset 0 0 10px rgba(0,0,0,0.5); position: relative; }
-        .seal.filled{ 
-            border:3px solid var(--gold); 
-            animation: pulse-gold 1s infinite alternate; 
-            color: #000; 
-            background: var(--gold-light); 
-        } 
-        @keyframes pulse-gold { from { box-shadow: 0 0 10px rgba(255,215,0,0.5), 0 0 2px var(--gold); } to { box-shadow: 0 0 20px rgba(255,215,0,0.8), 0 0 5px var(--gold); } }
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>LUDUX - Catálogo</title>
+  <style>
+    :root {
+      --gold: #ffd700;
+      --bg: #000;
+      --card-bg: rgba(255, 255, 255, 0.05);
+      --hover-bg: rgba(255, 255, 255, 0.1);
+    }
 
-        #ruleta-container{ text-align:center; margin-top:20px; padding:15px; background: #222; border-radius:var(--radius); position: relative; }
-        #ruleta{ width:300px; height:300px; border-radius:50%; margin:15px auto; border:10px solid var(--gold); position:relative; overflow:hidden; transition:transform 5s cubic-bezier(.33,1,.68,1); box-shadow: 0 0 40px rgba(255,215,0,0.7), inset 0 0 20px #000; }
-        .seg{ position:absolute; width:50%; height:50%; clip-path:polygon(0 0,100% 0,100% 100%); transform-origin:100% 100%; display: flex; align-items: flex-end; justify-content: center; }
-        .label{ position:absolute; width:100%; height:100%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:12px; color:#000; padding-bottom: 30px; line-height: 1.1; max-width: 80%; text-align: center; }
-        #arrow{ width:0; height:0; border-left:20px solid transparent; border-right:20px solid transparent; border-bottom:30px solid crimson; margin:0 auto; position:relative; top:10px; z-index:10; }
-        
-        #prizeModal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.9);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 100;
-            backdrop-filter: blur(5px);
-        }
-        #prizeContent {
-            background: var(--card-bg);
-            padding: 30px;
-            border-radius: var(--radius);
-            text-align: center;
-            max-width: 400px;
-            width: 90%;
-            box-shadow: 0 0 50px var(--gold-light);
-            animation: bounceIn 0.5s ease-out;
-            position: relative;
-        }
-        #prizeContent h2 {
-            font-family: 'Cormorant Garamond', serif;
-            color: var(--gold);
-            font-size: 36px;
-            margin-bottom: 10px;
-            text-shadow: 0 0 5px rgba(255,215,0,0.5);
-        }
-        #prizeImg {
-            width: 150px;
-            height: 150px;
-            object-fit: cover;
-            border-radius: 8px;
-            margin: 15px auto;
-            border: 3px solid var(--gold);
-            display: none; 
-        }
-        #prizeModal button {
-            margin-top: 20px;
-            width: 100%;
-        }
-        .confetti-effect {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            overflow: hidden;
-        }
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: "Inter", sans-serif;
+      background-color: var(--bg);
+      color: #fff;
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
 
-        #adminPanel pre, #adminPanel textarea{ background:#111; border:1px solid #333; padding:10px; border-radius:6px; color:#ccc; white-space:pre-wrap; word-break:break-word; max-height:250px; overflow:auto; font-size:14px; }
-        .codesList img{ max-width:120px; display:block; margin:10px 0; border-radius:4px; }
-        .stats-grid{ display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; text-align: center; }
-        .stat-item{ background: #222; padding: 10px; border-radius: 8px; font-size: 14px; }
-        .stat-value{ font-size: 24px; font-weight: bold; color: var(--gold); }
-        
-        @media (max-width: 850px) { .area{ grid-template-columns: 1fr; } header h1{ font-size: 36px; } #ruleta{ width: 250px; height: 250px; } }
-        @media (max-width: 500px) { body{ padding: 10px; } header img{ width: 80px; } header h1{ font-size: 30px; } .card{ padding: 15px; } .row{ flex-direction: column; } .seal{ width: 50px; height: 50px; } }
-    </style>
+    .left {
+      flex: 1;
+      padding: 30px 40px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      overflow-y: auto;
+      border-right: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .right {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: var(--bg);
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* ✨ Animación constante del logo */
+    .logo {
+      width: 200px;
+      height: auto;
+      margin-bottom: 15px;
+      animation: float 3s ease-in-out infinite, glow 4s ease-in-out infinite;
+      filter: drop-shadow(0 0 15px rgba(255,215,0,0.4));
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-5px); }
+    }
+
+    @keyframes glow {
+      0%, 100% { filter: drop-shadow(0 0 10px rgba(255,215,0,0.4)); }
+      50% { filter: drop-shadow(0 0 25px rgba(255,215,0,0.8)); }
+    }
+
+    /* 👑 Texto Bienvenid@ animado */
+    .welcome {
+      font-size: 1.8rem;
+      font-weight: bold;
+      color: var(--gold);
+      text-shadow: 0 0 8px rgba(255,215,0,0.6), 0 0 16px rgba(255,215,0,0.3);
+      margin-bottom: 25px;
+      animation: shine 2.5s infinite linear, moveText 5s ease-in-out infinite;
+      letter-spacing: 2px;
+    }
+
+    @keyframes shine {
+      0% { text-shadow: 0 0 8px rgba(255,215,0,0.4), 0 0 16px rgba(255,215,0,0.2); }
+      50% { text-shadow: 0 0 15px rgba(255,215,0,0.8), 0 0 25px rgba(255,215,0,0.5); }
+      100% { text-shadow: 0 0 8px rgba(255,215,0,0.4), 0 0 16px rgba(255,215,0,0.2); }
+    }
+
+    @keyframes moveText {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-4px); }
+    }
+
+    /* ✨ Catálogo con animaciones suaves */
+    .catalogo {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 20px;
+      width: 100%;
+      animation: fadeIn 1s ease-in-out;
+    }
+
+    .item {
+      background: var(--card-bg);
+      border-radius: 14px;
+      padding: 15px;
+      text-align: center;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 8px rgba(255,255,255,0.1);
+      animation: floatItem 5s ease-in-out infinite;
+    }
+
+    @keyframes floatItem {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-3px); }
+    }
+
+    .item:hover {
+      transform: scale(1.08);
+      background: var(--hover-bg);
+      box-shadow: 0 0 25px rgba(255,215,0,0.4);
+    }
+
+    .item img {
+      width: 100%;
+      border-radius: 10px;
+      margin-bottom: 10px;
+      animation: pulseImg 4s ease-in-out infinite;
+    }
+
+    @keyframes pulseImg {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.03); }
+    }
+
+    .item h3 {
+      margin: 5px 0;
+      font-size: 1rem;
+      color: #fff;
+    }
+
+    .item p {
+      margin: 0;
+      color: var(--gold);
+      font-weight: bold;
+    }
+
+    .right img {
+      width: 70%;
+      height: auto;
+      border-radius: 20px;
+      box-shadow: 0 0 25px rgba(255,255,255,0.15);
+      animation: appear 1s ease-in-out, floatRight 6s ease-in-out infinite;
+      transition: transform 0.4s ease, box-shadow 0.4s ease;
+      cursor: pointer;
+    }
+
+    @keyframes floatRight {
+      0%, 100% { transform: scale(1) translateY(0); }
+      50% { transform: scale(1.02) translateY(-6px); }
+    }
+
+    .right img:hover {
+      transform: scale(1.08) rotate(1deg);
+      box-shadow: 0 0 40px rgba(255,215,0,0.4);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes appear {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #333;
+      border-radius: 10px;
+    }
+
+    @media (max-width: 900px) {
+      body {
+        flex-direction: column;
+        height: auto;
+      }
+      .left, .right {
+        flex: none;
+        width: 100%;
+        border: none;
+      }
+      .right img {
+        width: 90%;
+        margin-top: 20px;
+      }
+    }
+  </style>
 </head>
 <body>
-<div class="wrap">
-    <header>
-        <img id="brandLogo" src="Ludux .png" alt="Ludux logo" onerror="logoFallback()" /> 
-        <div>
-            <h1>LUDUX</h1>
-            <div class="small">Sistema de Lealtad (Modular Firebase) · Códigos QR · Ruleta</div>
-        </div>
-    </header>
-    
-    <div class="area">
-        <div id="leftColumn">
-            
-                       <div class="card" id="loginCard">
-                <h3>1. Iniciar sesión (cliente)</h3>
-                <input id="loginUser" placeholder="Nombre de Usuario" type="name" autocomplete="name">
-                <input id="loginPass" placeholder="Contraseña" type="password" autocomplete="current-password">
-                <div class="row">
-                    <button onclick="clientLogin()">Entrar</button>
-                </div>
-                <div id="loginMsg" class="small" style="margin-top:10px"></div>
-            </div>
+  <div class="left">
+    <!-- 🔸 Logo animado -->
+    <img src="Ludux .png" alt="LUDUX Logo" class="logo">
 
-            <div class="card" id="registerCard" style="margin-top:12px">
-                <h3>2. Registrarse</h3>
-                <input id="regUser" placeholder="Nombre de Usuario (Será tu ID de login)" type="name" autocomplete="name">
-                <input id="regPass" placeholder="Contraseña" type="password" autocomplete="new-password">
-                <button onclick="clientRegister()">Crear Cuenta</button>
-                <div id="regMsg" class="small" style="margin-top:10px"></div>
-            </div>
-
-            <div class="card" id="adminLoginCard" style="margin-top:12px">
-                <h3>3. Iniciar Sesión (Admin)</h3>
-                <div class="small">—</div> 
-                <input id="adminPinInput" placeholder="PIN Secreto Admin" type="password">
-                <button onclick="adminLogin()">Entrar Admin</button>
-                <div id="adminLoginMsg" class="small" style="margin-top:10px"></div>
-            </div>
-
-            <div class="card" id="catalogCard" style="margin-top:24px">
-                <h3>🛍️ Catálogo de Productos</h3> 
-                <div class="catalog-container" id="catalogList">
-                    </div>
-                <p id="catalogDebug" class="small" style="color:red; margin-top:10px; display:none;"></p>
-            </div>
-            
-            <div class="card" id="clientCard" style="display:none; margin-top:12px">
-                <h3 id="welcome">Hola</h3>
-                <div class="small">Tu Tarjeta Digital LUDUX</div>
-                <div id="sealBoard" class="seal-board"></div>
-
-                <div class="small">Último Código Escaneado:</div>
-                <input id="detectedCode" readonly>
-                <div class="row">
-                    <button onclick="alert('La solicitud debe ser autorizada por un administrador.');">Solicitar Sello (Manual)</button> 
-                    <button class="mutebtn" onclick="clientLogout()">Salir</button>
-                </div>
-                <div id="clientMsg" class="small" style="margin-top:10px"></div>
-
-                <div id="ruletaSection" style="display:none;margin-top:20px;">
-                    <h4>🎉 ¡Tarjeta Completa! Gira y Gana! 🎉</h4>
-                    <div id="ruleta-container">
-                        <div id="arrow"></div>
-                        <div id="ruleta"></div>
-                        <div class="row" style="margin-top:15px">
-                            <button id="spinBtn" onclick="spin()">Girar Ruleta</button>
-                            <button class="mutebtn" onclick="closePrize()">Cerrar</button>
-                        </div>
-                        <div id="prizeShow" class="small" style="margin-top:10px"></div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="card" id="requestsCard" style="display:none;"></div> 
-        </div>
-
-        <div id="rightColumn">
-            <div class="card" id="adminPanel" style="display:none">
-                <h3>Panel de Control LUDUX</h3>
-                <div class="small" style="color:var(--gold)">Bienvenido, Administrador. PIN actual: <span id="pinVisible"></span></div>
-                
-                <hr>
-                
-                <h4>📈 Estadísticas Rápidas (Sincronización Local/Firebase)</h4>
-                <div id="statsArea" class="stats-grid"></div>
-
-                <hr>
-
-                <h4>🔑 Generar Códigos QR (Uso Único)</h4>
-                <input id="codePrefix" placeholder="Prefijo (ej LUDX)" value="LUDX">
-                <input id="codeQty" type="number" placeholder="Cantidad" value="5">
-                <select id="codeProduct">
-                    </select>
-                <button onclick="generateCodes()">Generar códigos + QR</button>
-                <div id="codesOut" class="small codesList"></div>
-
-                <hr>
-
-                <h4>🧑‍💻 Autorizar Código Manualmente</h4>
-                <input id="authUser" placeholder="Usuario/Email a acreditar">
-                <input id="authCode" placeholder="Código (ej LUDX-ABC123)">
-                <button onclick="authCode()">Autorizar Ahora</button>
-                <div id="authMsg" class="small"></div>
-                
-                <hr>
-
-                <h4>🧍 Clientes Registrados y Sellos (Tiempo Real)</h4>
-                <pre id="usersList" class="small"></pre>
-                
-                <hr>
-                
-                <h4>🏆 Historial de Premios Canjeados (Tiempo Real)</h4>
-                <pre id="redemptionsList" class="small"></pre>
-
-                <div style="margin-top:20px">
-                    <button class="mutebtn" onclick="adminLogout()">Salir Admin</button>
-                </div>
-            </div>
-        </div>
+    <!-- 👑 Texto de bienvenida -->
+    <div class="welcome">
+      👑 Bienvenid@ 💎
     </div>
 
-    <div id="prizeModal">
-        <div id="prizeContent">
-            <div class="confetti-effect" id="confettiContainer"></div>
-            <h2 id="modalTitle"></h2>
-            <p id="modalPrizeName" style="font-size: 20px; font-weight: bold; color: #fff;"></p>
-            <img id="prizeImg" src="" alt="Imagen del premio ganado">
-            <button onclick="closePrizeModal()">Cerrar</button>
-        </div>
+    <!-- 🔹 Catálogo -->
+    <div class="catalogo">
+      <div class="item">
+        <img src="galletas.png" alt="Galletas Mini">
+        <h3>Galletas Mini</h3>
+        <p>$10.00</p>
+      </div>
+      <div class="item">
+        <img src="galletas.png" alt="Mamut Mini">
+        <h3>Mamut Mini</h3>
+        <p>$5.00</p>
+      </div>
+      <div class="item">
+        <img src="roll ups.png" alt="Roll Ups">
+        <h3>Roll Ups</h3>
+        <p>$8.00</p>
+      </div>
+      <div class="item">
+        <img src="roll ups.png" alt="2 Roll Ups">
+        <h3>2 Roll Ups</h3>
+        <p>$14.00</p>
+      </div>
+      <div class="item">
+        <img src="brownie.png" alt="Brownie">
+        <h3>Brownie</h3>
+        <p>$10.00</p>
+      </div>
+      <div class="item">
+        <img src="brownie.png" alt="2 Brownies">
+        <h3>2 Brownies</h3>
+        <p>$15.00</p>
+      </div>
+      <div class="item">
+        <img src="Papitas.png" alt="Papitas">
+        <h3>Papitas</h3>
+        <p>$15.00</p>
+      </div>
+      <div class="item">
+        <img src="calaveritas.jpg" alt="Galleta de Calaverita">
+        <h3>Galleta de Calaverita</h3>
+        <p>$6.00</p>
+      </div>
+      <div class="item">
+        <img src="calaveritas.jpg" alt="2 Galletas de Calaverita">
+        <h3>2 Galletas de Calaverita</h3>
+        <p>$10.00</p>
+      </div>
     </div>
-</div>
-
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js";
-    import { getFirestore, collection, doc, setDoc, onSnapshot, getDoc, runTransaction } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js";
-    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-auth.js";
-    
-    // Configuración de tu app Firebase
-    const firebaseConfig = {
-      apiKey: "AIzaSyCFXSlAmwU-K-JhmB7pAjXUOeJV4yjKu7w",
-      authDomain: "ludux-52a4f.firebaseapp.com",
-      projectId: "ludux-52a4f",
-      storageBucket: "ludux-52a4f.firebasestorage.app",
-      messagingSenderId: "683545986811",
-      appId: "1:683545986811:web:9030621c68fa6648d1d25e",
-      measurementId: "G-CQ3GF4G1LV"
-    };
-
-    // Inicializar Firebase
-    const app = initializeApp(firebaseConfig);
-    
-    // Hacemos las instancias y funciones accesibles globalmente
-    window.db = getFirestore(app); 
-    window.auth = getAuth(app);   
-
-    window.fs = { 
-        collection, doc, setDoc, onSnapshot, getDoc, runTransaction, 
-        createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut 
-    };
-    
-    console.log("Firebase y Firestore inicializados en modo modular.");
-</script>
-
-<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.4.0/dist/confetti.browser.min.js"></script>
-
-<script>
-/* ================== CONFIGURACIÓN DE LA APLICACIÓN ================== */
-const ADMIN_PIN = "1234"; 
-const MAX_SEALS = 10;
-const SEAL_IMAGES = ['🐻', '💎']; 
-const SEAL_COLORS = ['#d3a95d', '#87ceeb']; 
-
-const LS_USERS = 'ludux_users';
-const LS_CODES = 'ludux_codes';
-const LS_REDEMPTIONS = 'ludux_redemptions';
-
-// RUTA BASE para IMAGENES LOCALES. 
-const IMAGE_BASE_PATH = ''; 
-
-// Catálogo de Productos/Imágenes
-const PRODUCT_CATALOG = [
-    { name: "Galletas Mini", price: 10.00, value: 'GalletaMini', image: 'galletas.png' },
-    { name: "Mamut Mini", price: 5.00, value: 'MamutMini', image: 'galletas.png' },
-    { name: "Roll Ups", price: 8.00, value: 'RollUps', image: 'roll ups.png' },
-    { name: "2 Roll Ups", price: 14.00, value: 'RollUps2', image: 'roll ups.png' },
-    { name: "Brownie", price: 10.00, value: 'Brownie', image: 'brownie.png' },
-    { name: "2 Brownies", price: 15.00, value: 'Brownie2', image: 'brownie.png' },
-    { name: "Papitas", price: 15.00, value: 'Papitas', image: 'Papitas.png' },
-    { name: "Galleta de Calaverita", price: 6.00, value: 'Calaverita', image: 'calaveritas.jpg' }, 
-    { name: "2 Galletas de Calaverita", price: 10.00, value: 'Calaverita2', image: 'calaveritas.jpg' },
-
-];
-
-const PRIZE_REPETITIONS = [
-    { name: "nada", count: 5, color: "#444" },
-    { name: "Galletas Arcoíris", count: 2, color: "#ff99e6" },
-    { name: "galletas", count: 1, color: "#ffcc66" },
-    { name: "Rancheritos", count: 2, color: "#e65c00" },
-    { name: "Ruffles", count: 2, color: "#cc0000" },
-    { name: "Sabritas", count: 2, color: "#3399ff" },
-    { name: "papitas", count: 1, color: "#e6e600" },
-    { name: "2x1 siguiente compra", count: 1, color: "#00cc66" },
-    { name: "roll up", count: 1, color: "#cc66ff" },
-    { name: "elige lo que quieras", count: 1, color: "#ffffff" },
-    { name: "Galleta de Calaverita", count: 1, color: "#993333" },
-    { name: "brownie", count: 1, color: "#663300" },
-    { name: "mamut", count: 2, color: "#b3b3cc" },
-]; 
-/* ==================================================================== */
-
-let currentUser = null; 
-let currentUserData = null; 
-let FULL_PRIZE_LIST = []; 
-let unsubscribeFromUser = null; 
-
-/* ---------------- Utilidades de Datos Locales (Backup) ---------------- */
-function loadData(key, defaultValue = {}) {
-    try {
-        const data = localStorage.getItem(key);
-        return data ? JSON.parse(data) : defaultValue;
-    } catch (e) {
-        console.error("Error cargando de localStorage:", key, e);
-        return defaultValue;
-    }
-}
-
-function saveData(key, data) {
-    try {
-        localStorage.setItem(key, JSON.stringify(data));
-        return true;
-    } catch (e) {
-        console.error("Error guardando en localStorage:", key, e);
-        return false;
-    }
-}
-
-
-/* ---------------- Utilidades de Interfaz ---------------- */
-function show(idToShow){ 
-    const mainCards = [
-        document.getElementById('loginCard'), 
-        document.getElementById('registerCard'), 
-        document.getElementById('adminLoginCard'), 
-        document.getElementById('clientCard'), 
-        document.getElementById('adminPanel')
-    ];
-    
-    mainCards.forEach(card => {
-        if (card) card.style.display = 'none';
-    });
-    
-    if (document.getElementById(idToShow)) {
-        document.getElementById(idToShow).style.display='block';
-    }
-    
-    if (idToShow === 'home' || !idToShow) {
-        showHome();
-    }
-
-    if (document.getElementById('catalogCard')) document.getElementById('catalogCard').style.display = 'block';
-}
-
-function showHome(){ 
-    if (document.getElementById('loginCard')) document.getElementById('loginCard').style.display = 'block';
-    if (document.getElementById('registerCard')) document.getElementById('registerCard').style.display = 'block';
-    if (document.getElementById('adminLoginCard')) document.getElementById('adminLoginCard').style.display = 'block';
-    
-    if (document.getElementById('clientCard')) document.getElementById('clientCard').style.display = 'none';
-    if (document.getElementById('adminPanel')) document.getElementById('adminPanel').style.display = 'none';
-    if (document.getElementById('requestsCard')) document.getElementById('requestsCard').style.display = 'none';
-}
-
-function logoFallback(){ 
-    document.getElementById('brandLogo').src='https://via.placeholder.com/120?text=LUDUX'; 
-}
-
-// ⚠️ AJUSTE EN RENDERIZACIÓN DE CATÁLOGO
-function renderCatalog() {
-    const list = document.getElementById('catalogList');
-    const debug = document.getElementById('catalogDebug');
-
-    if (!list) {
-        if (debug) debug.textContent = 'ERROR: El contenedor catalogList no existe.';
-        return;
-    }
-
-    // Generar el HTML
-    const catalogHtml = PRODUCT_CATALOG.map(p => 
-        `
-        <div class="catalog-item">
-            <img src="${IMAGE_BASE_PATH}${p.image}" alt="${p.name}" onerror="this.onerror=null;this.src='https://via.placeholder.com/70?text=IMG';">
-            <div class="item-info">
-                <div class="item-name">${p.name}</div>
-                <div class="item-value">$${p.price.toFixed(2)}</div>
-            </div>
-        </div>
-        `
-    ).join('');
-
-    // Insertar el HTML
-    list.innerHTML = catalogHtml;
-
-    // Mensaje de depuración: Si el catálogo está vacío, lo muestra.
-    if (catalogHtml.trim() === '') {
-        if (debug) {
-             debug.textContent = 'El catálogo está vacío. Revisa la constante PRODUCT_CATALOG.';
-             debug.style.display = 'block';
-        }
-    } else {
-        if (debug) debug.style.display = 'none';
-    }
-}
-
-function renderUserCard(){
-    if (!currentUser) return;
-    
-    const info = currentUserData; 
-
-    if (!info) { clientLogout(); return; } 
-
-    document.getElementById('welcome').textContent = 'Hola, ' + currentUser + ' 👑';
-    const board = document.getElementById('sealBoard');
-    board.innerHTML = '';
-    const stamps = info.stamps || 0;
-    
-    for(let i=0;i<MAX_SEALS;i++){
-        const d = document.createElement('div');
-        d.className = 'seal' + (i < stamps ? ' filled' : '');
-        
-        d.textContent = SEAL_IMAGES[i % SEAL_IMAGES.length];
-        d.style.color = i < stamps ? '#000' : SEAL_COLORS[i % SEAL_IMAGES.length];
-        
-        board.appendChild(d);
-    }
-    
-    const msg = document.getElementById('clientMsg');
-    if (stamps >= MAX_SEALS) {
-        msg.textContent = '¡Felicidades! Tienes una tarjeta completa. ¡Gira la ruleta!';
-        document.getElementById('ruletaSection').style.display = 'block';
-    } else {
-        msg.textContent = `Te faltan ${MAX_SEALS - stamps} sellos para tu premio. ¡Sigue comprando!`;
-        document.getElementById('ruletaSection').style.display = 'none';
-    }
-}
-
-
-/* ---------------- Clientes: Registro/Login/Logout (Modular Auth) ---------------- */
-
-async function clientRegister() {
-    const u = (document.getElementById('regUser').value||'').trim(); // email
-    const p = (document.getElementById('regPass').value||'').trim(); // password
-    const msg = document.getElementById('regMsg');
-    
-    if(!u||!p){ msg.textContent='Completa correo y contraseña.'; return; }
-    
-    // **VERIFICACIÓN CRUCIAL:** Si window.auth/window.fs no están definidos, la inicialización modular falló.
-    if (!window.auth || !window.fs || !window.db) {
-        msg.textContent = '❌ Error de inicialización de Firebase. Intenta recargar la página.';
-        console.error("Error: Las variables globales de Firebase (window.auth/window.fs) no están definidas.");
-        return;
-    }
-
-    try {
-        // 1. Crear usuario en Firebase Authentication
-        const userCredential = await window.fs.createUserWithEmailAndPassword(window.auth, u, p);
-        const user = userCredential.user;
-
-        // 2. Guardar datos iniciales en Firestore
-        await window.fs.setDoc(window.fs.doc(window.db, "usuarios", u), {
-            password: p, 
-            stamps: 0,
-            redemptions: 0,
-            purchases: [],
-            uid: user.uid 
-        }, { merge: true });
-
-        // 3. Actualizar LocalStorage como respaldo
-        const usersLocal = loadData(LS_USERS, {}); 
-        usersLocal[u] = { stamps: 0, redemptions: 0, purchases: [], password: p };
-        saveData(LS_USERS, usersLocal);
-        
-        msg.textContent = '✅ ¡Cuenta creada con éxito! Ahora puedes iniciar sesión.';
-        document.getElementById('regUser').value=''; 
-        document.getElementById('regPass').value='';
-    }
-    catch (err) {
-        console.error("Error al registrar:", err);
-        if (err.code === 'auth/email-already-in-use') {
-            msg.textContent = '❌ Error: El correo ya está registrado.';
-        } else if (err.code === 'auth/weak-password') {
-            msg.textContent = '❌ Error: La contraseña debe tener al menos 6 caracteres.';
-        } else if (err.code === 'auth/network-request-failed') {
-             msg.textContent = '❌ Error de red: No se pudo conectar a Firebase. Revisa tu conexión a Internet.';
-        } else {
-            msg.textContent = `❌ Error al guardar la cuenta: ${err.message}`;
-        }
-    }
-}
-
-
-async function clientLogin(){
-    const u = (document.getElementById('loginUser').value||'').trim(); // email
-    const p = (document.getElementById('loginPass').value||'').trim(); // password
-    const msg = document.getElementById('loginMsg');
-    
-    if(!u||!p){ msg.textContent='Completa user y pass'; return; }
-
-    if (!window.auth || !window.fs || !window.db) {
-        msg.textContent = '❌ Error de inicialización de Firebase. Intenta recargar la página.';
-        return;
-    }
-
-    try {
-        // 1. Autenticar con Firebase Authentication
-        await window.fs.signInWithEmailAndPassword(window.auth, u, p);
-
-        // 2. Obtener la referencia de Firestore
-        const userRef = window.fs.doc(window.db, "usuarios", u);
-        const doc = await window.fs.getDoc(userRef);
-
-        if (!doc.exists) { 
-            msg.textContent = 'Error: Datos de usuario no encontrados en Firestore. Vuelve a registrarte.'; 
-            await window.fs.signOut(window.auth); 
-            return; 
-        }
-
-        const data = doc.data();
-        currentUser = u;
-        currentUserData = data;
-
-        // 3. Escuchar cambios en tiempo real
-        if (unsubscribeFromUser) unsubscribeFromUser(); 
-        unsubscribeFromUser = window.fs.onSnapshot(userRef, snap => {
-            currentUserData = snap.data();
-            renderUserCard();
-        }, err => {
-            console.error("Error en onSnapshot de usuario:", err);
-            msg.textContent = "Error de sincronización con Firebase.";
-            clientLogout();
-        });
-
-        show('clientCard');
-        renderUserCard();
-    } 
-    catch(err) {
-        console.error("Error Firebase login:", err);
-        if (err.code === 'auth/wrong-password' || err.code === 'auth/user-not-found' || err.code === 'auth/invalid-credential') {
-            msg.textContent = 'Usuario (correo) o contraseña incorrectos.';
-        } else if (err.code === 'auth/invalid-email') {
-            msg.textContent = 'Formato de correo inválido.';
-        } else if (err.code === 'auth/network-request-failed') {
-             msg.textContent = '❌ Error de red: No se pudo conectar a Firebase. Revisa tu conexión a Internet.';
-        } else {
-            msg.textContent = `❌ Error al conectar con Firebase: ${err.message}`;
-        }
-    }
-}
-
-function clientLogout(){ 
-    if (window.auth) window.fs.signOut(window.auth).catch(e => console.error("Error al cerrar sesión de Auth:", e));
-    
-    if (unsubscribeFromUser) {
-        unsubscribeFromUser();
-        unsubscribeFromUser = null;
-    }
-    currentUser=null; 
-    currentUserData=null;
-    document.getElementById('loginUser').value=''; 
-    document.getElementById('loginPass').value=''; 
-    showHome(); 
-}
-
-/* ---------------- Panel Admin ---------------- */
-function adminLogin(){
-    const pin = document.getElementById('adminPinInput').value;
-    const msg = document.getElementById('adminLoginMsg');
-    if(pin === ADMIN_PIN){
-        show('adminPanel');
-        document.getElementById('pinVisible').textContent = ADMIN_PIN;
-        renderAdminPanel();
-    } else {
-        msg.textContent = 'PIN incorrecto.';
-    }
-}
-
-function adminLogout(){
-    document.getElementById('adminPinInput').value = '';
-    showHome();
-}
-
-function renderAdminPanel(){
-    // Estadísticas Rápidas (Local)
-    const usersLocal = loadData(LS_USERS, {});
-    const codesLocal = loadData(LS_CODES, {});
-    const redemptionsLocal = loadData(LS_REDEMPTIONS, []);
-    
-    const totalUsers = Object.keys(usersLocal).length;
-    const totalCodes = Object.keys(codesLocal).length;
-    const totalRedemptions = redemptionsLocal.length;
-    
-    const statsHtml = `
-        <div class="stat-item">Clientes (Local)<div class="stat-value">${totalUsers}</div></div>
-        <div class="stat-item">Códigos Gen. (Local)<div class="stat-value">${totalCodes}</div></div>
-        <div class="stat-item">Premios (Local)<div class="stat-value">${totalRedemptions}</div></div>
-    `;
-    document.getElementById('statsArea').innerHTML = statsHtml;
-    
-    // A. Clientes Registrados y Sellos (onSnapshot)
-    if (window.fs && window.db) {
-        window.fs.onSnapshot(window.fs.collection(window.db, "usuarios"), snapshot => {
-            const usersList = document.getElementById('usersList');
-            let text = 'Usuario | Sellos | Redenciones\n' + '-'.repeat(30) + '\n';
-            
-            snapshot.forEach(doc => {
-                const data = doc.data();
-                text += `${doc.id.padEnd(8)} | ${String(data.stamps || 0).padEnd(6)} | ${data.redemptions || 0}\n`;
-            });
-            
-            usersList.textContent = text;
-        }, err => {
-            console.error("Error al obtener usuarios de Firestore:", err);
-            document.getElementById('usersList').textContent = "ERROR: No se pudo conectar a Firebase (usuarios).";
-        });
-        
-        // B. Códigos Generados (onSnapshot)
-        window.fs.onSnapshot(window.fs.collection(window.db, "codes"), snapshot => {
-            const codesListDiv = document.getElementById('codesOut');
-            let generatedHtml = 'Códigos Generados:\n';
-            
-            snapshot.forEach(doc => {
-                const data = doc.data();
-                const status = data.used ? `Usado por ${data.usedBy} (${data.usedAt})` : 'DISPONIBLE';
-                generatedHtml += `<p style="font-size:14px; margin: 5px 0;">
-                    **${doc.id}** (${data.product}) - *${status}*
-                </p>`;
-            });
-            codesListDiv.innerHTML = generatedHtml;
-            
-        }, err => {
-            console.error("Error al obtener códigos de Firestore:", err);
-        });
-
-        // C. Redenciones/Premios Canjeados (onSnapshot)
-        window.fs.onSnapshot(window.fs.collection(window.db, "redemptions"), snapshot => {
-            const redemptionsList = document.getElementById('redemptionsList');
-            let text = '';
-            snapshot.forEach(doc => {
-                const data = doc.data();
-                text += `[${data.date}] ${data.user} ganó: ${data.prize}\n`;
-            });
-            redemptionsList.textContent = text || 'Ningún premio canjeado.';
-        }, err => {
-            console.error("Error al obtener redenciones de Firestore:", err);
-        });
-    }
-
-
-    // Rellenar select de productos
-    const select = document.getElementById('codeProduct');
-    select.innerHTML = PRODUCT_CATALOG.map(p => 
-        `<option value="${p.value}">${p.name} ($${p.price.toFixed(2)})</option>`
-    ).join('');
-}
-
-
-/* ---------------- Generación y Autorización (Modular) ---------------- */
-function generateRandomCode(prefix) {
-    const chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    let code = prefix + '-';
-    for (let i = 0; i < 6; i++) {
-        code += chars.charAt(Math.floor(Math.random() * chars.length));
-    }
-    return code;
-}
-
-function generateCodes() {
-    const prefix = document.getElementById('codePrefix').value.toUpperCase().trim();
-    const qty = parseInt(document.getElementById('codeQty').value);
-    const productValue = document.getElementById('codeProduct').value;
-    const codesDiv = document.getElementById('codesOut');
-    
-    if (!prefix || qty <= 0 || !productValue) {
-        codesDiv.textContent = 'Asegúrate de completar todos los campos.';
-        return;
-    }
-    if (!window.db) { codesDiv.textContent = 'Error: Firebase no inicializado.'; return; }
-
-    const codesLocal = loadData(LS_CODES, {});
-    const batch = window.db.batch(); 
-
-    let generatedHtml = 'Códigos Generados:\n';
-    
-    for (let i = 0; i < qty; i++) {
-        const code = generateRandomCode(prefix);
-        
-        // 1. Guardar en Firestore Batch
-        const codeRef = window.fs.doc(window.db, "codes", code);
-        batch.set(codeRef, { 
-            used: false, 
-            product: productValue,
-            createdAt: new Date().toISOString()
-        });
-
-        // 2. Guardar Localmente
-        codesLocal[code] = { used: false, usedBy: '', usedAt: '', product: productValue };
-        
-        const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${code}`;
-        generatedHtml += `<p>${code} (${productValue})</p><img src="${qrUrl}" alt="QR Code for ${code}">`;
-    }
-
-    // Ejecutar el batch en Firestore
-    batch.commit().then(() => {
-        saveData(LS_CODES, codesLocal);
-        codesDiv.innerHTML = generatedHtml;
-    }).catch(err => {
-        console.error("Error al generar códigos en Firestore:", err);
-        codesDiv.textContent = 'ERROR al guardar códigos en Firebase.';
-    });
-}
-
-function authCode() {
-    const user = (document.getElementById('authUser').value || '').trim(); // email
-    const code = (document.getElementById('authCode').value || '').trim().toUpperCase();
-    const msg = document.getElementById('authMsg');
-    
-    if (!user || !code) { msg.textContent = 'Completa usuario y código.'; return; }
-    if (!window.fs || !window.db) { msg.textContent = 'Error: Firebase no inicializado.'; return; }
-
-    const userRef = window.fs.doc(window.db, "usuarios", user);
-    const codeRef = window.fs.doc(window.db, "codes", code);
-    
-    // Usar Transaction para asegurar la atomicidad de las operaciones
-    window.fs.runTransaction(window.db, transaction => {
-        return transaction.get(userRef).then(userDoc => {
-            return transaction.get(codeRef).then(codeDoc => {
-                
-                if (!userDoc.exists) { throw new Error('Usuario (email) no encontrado.'); }
-                if (!codeDoc.exists) { throw new Error('Código no existe.'); }
-
-                const userData = userDoc.data();
-                const codeData = codeDoc.data();
-
-                if (codeData.used) { throw new Error(`Código ya usado por ${codeData.usedBy}.`); }
-                
-                // 1. Actualizar datos de Usuario
-                const newStamps = (userData.stamps || 0) + 1;
-                const newPurchases = [...(userData.purchases || []), { 
-                    code, 
-                    product: codeData.product, 
-                    date: new Date().toLocaleString() 
-                }];
-
-                transaction.set(userRef, {
-                    stamps: newStamps,
-                    purchases: newPurchases,
-                }, { merge: true });
-
-                // 2. Actualizar estado del Código
-                const usedAt = new Date().toLocaleString();
-                transaction.set(codeRef, {
-                    used: true,
-                    usedBy: user,
-                    usedAt: usedAt,
-                }, { merge: true });
-                
-                // 3. Actualizar LocalStorage como respaldo
-                const usersLocal = loadData(LS_USERS);
-                const codesLocal = loadData(LS_CODES);
-                usersLocal[user] = { ...usersLocal[user], stamps: newStamps, purchases: newPurchases };
-                codesLocal[code] = { ...codesLocal[code], used: true, usedBy: user, usedAt: usedAt };
-                saveData(LS_USERS, usersLocal);
-                saveData(LS_CODES, codesLocal);
-                
-                return { newStamps, user };
-            });
-        });
-    })
-    .then(result => {
-        msg.textContent = `✅ Sello agregado a ${result.user}. Total: ${result.newStamps}`;
-        document.getElementById('authUser').value = '';
-        document.getElementById('authCode').value = '';
-    })
-    .catch(err => {
-        msg.textContent = `❌ Error: ${err.message}`;
-        console.error("Error en Transacción de Sello:", err);
-    });
-}
-
-
-/* ---------------- Ruleta (Modular) ---------------- */
-function preparePrizeList() {
-    let list = [];
-    PRIZE_REPETITIONS.forEach(p => {
-        for (let i = 0; i < p.count; i++) {
-            list.push({ name: p.name, color: p.color });
-        }
-    });
-    return list;
-}
-
-function setupRoulette() {
-    FULL_PRIZE_LIST = preparePrizeList();
-    const ruleta = document.getElementById('ruleta');
-    const numPrizes = FULL_PRIZE_LIST.length; 
-    const degreesPerSegment = 360 / numPrizes;
-    
-    ruleta.innerHTML = ''; 
-    
-    FULL_PRIZE_LIST.forEach((prize, index) => {
-        const seg = document.createElement('div');
-        seg.className = 'seg';
-        seg.style.backgroundColor = prize.color;
-        seg.style.transform = `rotate(${index * degreesPerSegment}deg) skewY(${90 - degreesPerSegment}deg)`;
-        
-        const label = document.createElement('div');
-        label.className = 'label';
-        label.style.transform = `rotate(${degreesPerSegment / 2}deg) skewY(${-(90 - degreesPerSegment)}deg) rotate(-90deg)`;
-        label.textContent = prize.name.toUpperCase();
-        
-        seg.appendChild(label);
-        ruleta.appendChild(seg);
-    });
-}
-
-function spin() {
-    if (!currentUser || (currentUserData.stamps || 0) < MAX_SEALS) {
-        document.getElementById('prizeShow').textContent = "¡Necesitas " + MAX_SEALS + " sellos para girar!";
-        return;
-    }
-
-    document.getElementById('spinBtn').disabled = true;
-
-    const ruleta = document.getElementById('ruleta');
-    const numPrizes = FULL_PRIZE_LIST.length;
-    
-    const finalPrizeIndex = Math.floor(Math.random() * numPrizes);
-    const rotations = 10;
-    const degreesPerSegment = 360 / numPrizes;
-    
-    const targetRotation = 360 - ((finalPrizeIndex * degreesPerSegment) + (degreesPerSegment / 2));
-    const stopDegree = (360 * rotations) + targetRotation; 
-
-    ruleta.style.transition = 'transform 5s cubic-bezier(.33,1,.68,1)';
-    ruleta.style.transform = `rotate(${stopDegree}deg)`;
-    document.getElementById('prizeShow').textContent = 'Girando...';
-
-    setTimeout(() => {
-        const prizeData = FULL_PRIZE_LIST[finalPrizeIndex];
-        const prizeName = prizeData.name;
-        
-        document.getElementById('prizeShow').textContent = `¡El resultado es ${prizeName.toUpperCase()}!`;
-        
-        showPrizeModal(prizeName);
-        
-        // --- INICIO: Lógica de actualización de Firestore (Modular) ---
-        
-        if (window.fs && window.db) {
-            // 1. Resetear sellos y aumentar redenciones en Firestore
-            const userRef = window.fs.doc(window.db, "usuarios", currentUser);
-            window.fs.setDoc(userRef, {
-                stamps: 0,
-                redemptions: (currentUserData.redemptions || 0) + 1
-            }, { merge: true }).catch(err => console.error("Error al actualizar usuario en spin:", err));
-
-            // 2. Guardar el registro de la redención en la colección "redemptions"
-            const redemptionsRef = window.fs.doc(window.fs.collection(window.db, "redemptions"));
-            window.fs.setDoc(redemptionsRef, {
-                user: currentUser,
-                prize: prizeName,
-                date: new Date().toLocaleString()
-            }).catch(err => console.error("Error al registrar redención:", err));
-        }
-
-        // 3. Actualizar LocalStorage como respaldo
-        const usersLocal = loadData(LS_USERS);
-        if (usersLocal[currentUser]) {
-             usersLocal[currentUser].stamps = 0;
-             usersLocal[currentUser].redemptions = (usersLocal[currentUser].redemptions || 0) + 1;
-             saveData(LS_USERS, usersLocal);
-        }
-        
-        // --- FIN: Lógica de actualización de Firestore ---
-
-        ruleta.style.transition = 'none';
-        ruleta.style.transform = `rotate(0deg)`;
-
-    }, 5500); 
-}
-
-function closePrize(){
-    document.getElementById('ruletaSection').style.display = 'none';
-    document.getElementById('prizeShow').textContent = '';
-}
-
-/* ---------------- Modal de Premio y Confeti ---------------- */
-function showPrizeModal(prizeName) {
-    const modal = document.getElementById('prizeModal');
-    const modalTitle = document.getElementById('modalTitle');
-    const modalPrizeName = document.getElementById('modalPrizeName');
-    const prizeImg = document.getElementById('prizeImg');
-    const confetiContainer = document.getElementById('confettiContainer');
-
-    const product = PRODUCT_CATALOG.find(p => p.name.toLowerCase() === prizeName.toLowerCase());
-
-    if (prizeName.toLowerCase() === 'nada') {
-        modalTitle.textContent = "¡Suerte para la Próxima! 🙁";
-        modalPrizeName.textContent = "No ganaste un premio directo esta vez.";
-        prizeImg.style.display = 'none';
-        confetiContainer.style.display = 'none';
-    } else {
-        modalTitle.textContent = "¡Felicidades, Ganaste! 🎉";
-        modalPrizeName.textContent = prizeName.toUpperCase();
-        
-        if (product && product.image) {
-            prizeImg.src = IMAGE_BASE_PATH + product.image;
-            prizeImg.style.display = 'block';
-        } else {
-            prizeImg.style.display = 'none';
-        }
-        
-        confetiContainer.style.display = 'block';
-        runConfetti();
-    }
-    
-    modal.style.display = 'flex';
-}
-
-function runConfetti() {
-    if (typeof confetti === 'function') {
-        confetti({
-            particleCount: 150,
-            spread: 70,
-            origin: { y: 0.6 }
-        });
-    }
-}
-
-function closePrizeModal() {
-    document.getElementById('prizeModal').style.display = 'none';
-    document.getElementById('spinBtn').disabled = false;
-    document.getElementById('prizeShow').textContent = '';
-}
-
-// Inicialización
-document.addEventListener('DOMContentLoaded', () => {
-    setupRoulette(); 
-    renderCatalog(); 
-    showHome(); 
-    document.getElementById('detectedCode').value = 'LUDX-TEST1';
-});
-</script>
+  </div>
+
+  <!-- 🔹 Catálogo simple a la derecha -->
+  <div class="right">
+    <img src="catálogo simple.png" alt="Catálogo Simple">
+  </div>
 </body>
 </html>
 
