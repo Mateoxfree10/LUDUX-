@@ -20,8 +20,9 @@
       color: #fff;
       display: flex;
       flex-direction: row;
-      height: 100vh;
-      overflow: hidden;
+      min-height: 100vh; /* ✅ ahora es min-height, no height */
+      overflow-x: hidden; /* ✅ solo oculta scroll lateral */
+      overflow-y: auto;   /* ✅ permite desplazamiento vertical */
     }
 
     /* === Mitades principales === */
@@ -31,7 +32,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      overflow-y: auto;
+      overflow-y: visible; /* ✅ no limitar desplazamiento */
       border-right: 1px solid rgba(255,255,255,0.1);
       scroll-behavior: smooth;
     }
@@ -44,6 +45,7 @@
       background-color: var(--bg);
       position: relative;
       overflow: hidden;
+      padding: 20px;
     }
 
     /* ✨ Logo animado */
@@ -95,6 +97,7 @@
       gap: 20px;
       width: 100%;
       animation: fadeIn 1s ease-in-out;
+      margin-bottom: 40px; /* ✅ para que no se corte al final */
     }
 
     .item {
@@ -184,8 +187,7 @@
     @media (max-width: 900px) {
       body {
         flex-direction: column;
-        height: auto;
-        overflow-y: auto;
+        min-height: auto;
       }
 
       .left, .right {
@@ -269,6 +271,7 @@
   </div>
 </body>
 </html>
+
 
 
 
