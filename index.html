@@ -19,10 +19,12 @@
       background-color: var(--bg);
       color: #fff;
       display: flex;
+      flex-direction: row;
       height: 100vh;
       overflow: hidden;
     }
 
+    /* === Mitades principales === */
     .left {
       flex: 1;
       padding: 30px 40px;
@@ -31,6 +33,7 @@
       align-items: center;
       overflow-y: auto;
       border-right: 1px solid rgba(255,255,255,0.1);
+      scroll-behavior: smooth;
     }
 
     .right {
@@ -43,7 +46,7 @@
       overflow: hidden;
     }
 
-    /* ✨ Animación constante del logo */
+    /* ✨ Logo animado */
     .logo {
       width: 200px;
       height: auto;
@@ -71,6 +74,7 @@
       margin-bottom: 25px;
       animation: shine 2.5s infinite linear, moveText 5s ease-in-out infinite;
       letter-spacing: 2px;
+      text-align: center;
     }
 
     @keyframes shine {
@@ -84,7 +88,7 @@
       50% { transform: translateY(-4px); }
     }
 
-    /* ✨ Catálogo con animaciones suaves */
+    /* ✨ Catálogo */
     .catalogo {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
@@ -176,34 +180,41 @@
       border-radius: 10px;
     }
 
+    /* 📱 Ajustes para teléfonos */
     @media (max-width: 900px) {
       body {
         flex-direction: column;
         height: auto;
+        overflow-y: auto;
       }
+
       .left, .right {
         flex: none;
         width: 100%;
         border: none;
+        padding: 20px;
       }
+
       .right img {
         width: 90%;
-        margin-top: 20px;
+        margin: 25px auto;
+      }
+
+      .catalogo {
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      }
+
+      .welcome {
+        font-size: 1.5rem;
       }
     }
   </style>
 </head>
 <body>
   <div class="left">
-    <!-- 🔸 Logo animado -->
     <img src="Ludux .png" alt="LUDUX Logo" class="logo">
+    <div class="welcome">👑 Bienvenid@ 💎</div>
 
-    <!-- 👑 Texto de bienvenida -->
-    <div class="welcome">
-      👑 Bienvenid@ 💎
-    </div>
-
-    <!-- 🔹 Catálogo -->
     <div class="catalogo">
       <div class="item">
         <img src="galletas.png" alt="Galletas Mini">
@@ -253,12 +264,12 @@
     </div>
   </div>
 
-  <!-- 🔹 Catálogo simple a la derecha -->
   <div class="right">
-    <img src="catálogo simple.png" alt="Catálogo Simple">
+    <img src="catalogo simple.png" alt="Catálogo Simple">
   </div>
 </body>
 </html>
+
 
 
 
