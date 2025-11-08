@@ -19,38 +19,22 @@
       background-color: var(--bg);
       color: #fff;
       display: flex;
-      flex-direction: row;
-      min-height: 10vh;
+      flex-direction: column;
+      min-height: 100vh;
       overflow-x: hidden;
-      overflow-y: auto;
     }
 
-    .left {
-      flex: 1;
-      padding: 30px 40px;
+    .container {
       display: flex;
       flex-direction: column;
       align-items: center;
-      overflow-y: visible;
-      border-right: 1px solid rgba(255,255,255,0.1);
-      scroll-behavior: smooth;
-    }
-
-    .right {
-      flex: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background-color: var(--bg);
-      position: relative;
-      overflow: hidden;
       padding: 20px;
     }
 
     .logo {
-      width: 200px;
+      width: 180px;
       height: auto;
-      margin-bottom: 15px;
+      margin-bottom: 10px;
       animation: float 3s ease-in-out infinite, glow 4s ease-in-out infinite;
       filter: drop-shadow(0 0 15px rgba(255,215,0,0.4));
     }
@@ -66,33 +50,21 @@
     }
 
     .welcome {
-      font-size: 1.8rem;
+      font-size: 1.6rem;
       font-weight: bold;
       color: var(--gold);
       text-shadow: 0 0 8px rgba(255,215,0,0.6), 0 0 16px rgba(255,215,0,0.3);
       margin-bottom: 25px;
-      animation: shine 2.5s infinite linear, moveText 5s ease-in-out infinite;
-      letter-spacing: 2px;
       text-align: center;
     }
 
-    @keyframes shine {
-      0% { text-shadow: 0 0 8px rgba(255,215,0,0.4), 0 0 16px rgba(255,215,0,0.2); }
-      50% { text-shadow: 0 0 15px rgba(255,215,0,0.8), 0 0 25px rgba(255,215,0,0.5); }
-      100% { text-shadow: 0 0 8px rgba(255,215,0,0.4), 0 0 16px rgba(255,215,0,0.2); }
-    }
-
-    @keyframes moveText {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-4px); }
-    }
-
+    /* === Catálogo de productos === */
     .catalogo {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-      gap: 20px;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 15px;
       width: 100%;
-      animation: fadeIn 1s ease-in-out;
+      max-width: 600px;
       margin-bottom: 40px;
     }
 
@@ -103,17 +75,11 @@
       text-align: center;
       transition: all 0.3s ease;
       box-shadow: 0 2px 8px rgba(255,255,255,0.1);
-      animation: floatItem 5s ease-in-out infinite;
       cursor: pointer;
     }
 
-    @keyframes floatItem {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-3px); }
-    }
-
     .item:hover {
-      transform: scale(1.08);
+      transform: scale(1.06);
       background: var(--hover-bg);
       box-shadow: 0 0 25px rgba(255,215,0,0.4);
     }
@@ -136,29 +102,19 @@
       font-weight: bold;
     }
 
-    .right img {
-      width: 70%;
-      height: auto;
+    /* === Imagen del catálogo grande === */
+    .catalogo-img {
+      width: 100%;
+      max-width: 800px;
       border-radius: 20px;
       box-shadow: 0 0 25px rgba(255,255,255,0.15);
+      margin-bottom: 30px;
       animation: appear 1s ease-in-out, floatRight 6s ease-in-out infinite;
-      transition: transform 0.4s ease, box-shadow 0.4s ease;
-      cursor: pointer;
     }
 
     @keyframes floatRight {
       0%, 100% { transform: scale(1) translateY(0); }
       50% { transform: scale(1.02) translateY(-6px); }
-    }
-
-    .right img:hover {
-      transform: scale(1.08) rotate(1deg);
-      box-shadow: 0 0 40px rgba(255,215,0,0.4);
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(-10px); }
-      to { opacity: 1; transform: translateY(0); }
     }
 
     @keyframes appear {
@@ -169,8 +125,8 @@
     /* === CARRITO === */
     .cart-icon {
       position: fixed;
-      top: 20px;
-      right: 25px;
+      top: 15px;
+      right: 20px;
       background: none;
       border: none;
       cursor: pointer;
@@ -210,8 +166,8 @@
 
     .cart-popup {
       position: fixed;
-      top: 90px;
-      right: 20px;
+      top: 85px;
+      right: 15px;
       background: rgba(0,0,0,0.95);
       border: 2px solid var(--gold);
       border-radius: 15px;
@@ -280,10 +236,42 @@
       background-color: #ffe34d;
       transform: scale(1.05);
     }
+
+    /* === Adaptación para móvil === */
+    @media (max-width: 600px) {
+      .welcome {
+        font-size: 1.3rem;
+      }
+
+      .catalogo {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+      }
+
+      .item {
+        padding: 10px;
+      }
+
+      .catalogo-img {
+        width: 95%;
+      }
+    }
   </style>
 </head>
 <body>
-  <div class="left">
+  <button class="cart-icon">
+    <img src="Carrito.png" alt="Carrito dorado">
+    <span class="cart-count">0</span>
+  </button>
+
+  <div class="cart-popup">
+    <h2>Tu carrito</h2>
+    <div class="cart-items"></div>
+    <div class="total">Total: $0.00</div>
+    <button class="whatsapp-btn">Enviar por WhatsApp 💬</button>
+  </div>
+
+  <div class="container">
     <img src="Ludux .png" alt="LUDUX Logo" class="logo">
     <div class="welcome">👑 Bienvenid@ 💎</div>
 
@@ -295,26 +283,11 @@
       <div class="item"><img src="brownie.png" alt=""><h3>Brownie</h3><p>$10.00</p></div>
       <div class="item"><img src="brownie.png" alt=""><h3>2 Brownies</h3><p>$15.00</p></div>
       <div class="item"><img src="Papitas.png" alt=""><h3>Papitas</h3><p>$15.00</p></div>
-      <div class="item"><img src="calaveritas.jpg" alt=""><h3>Galleta de Calaverita</h3><p>$6.00</p></div>
-      <div class="item"><img src="calaveritas.jpg" alt=""><h3>2 Galletas de Calaverita</h3><p>$10.00</p></div>
+      <div class="item"><img src="calaveritas.jpg" alt=""><h3>Galleta Calaverita</h3><p>$6.00</p></div>
+      <div class="item"><img src="calaveritas.jpg" alt=""><h3>2 Galletas Calaverita</h3><p>$10.00</p></div>
     </div>
-  </div>
 
-  <div class="right">
-    <img src="catálogo simple.png" alt="Catálogo Simple">
-  </div>
-
-  <!-- 🛒 CARRITO -->
-  <button class="cart-icon">
-    <img src="Carrito.png" alt="Carrito dorado">
-    <span class="cart-count">0</span>
-  </button>
-
-  <div class="cart-popup">
-    <h2>Tu carrito</h2>
-    <div class="cart-items"></div>
-    <div class="total">Total: $0.00</div>
-    <button class="whatsapp-btn">Enviar por WhatsApp 💬</button>
+    <img src="catálogo simple.png" alt="Catálogo Simple" class="catalogo-img">
   </div>
 
   <script>
@@ -373,12 +346,13 @@
       const total = carrito.reduce((sum, i) => sum + i.precio, 0);
       mensaje += `\nTotal: $${total.toFixed(2)}`;
 
-      const url = `https://wa.me/524778052373?text=${encodeURIComponent(mensaje)}`;
+      const url = `https://wa.me/524776712434?text=${encodeURIComponent(mensaje)}`;
       window.open(url, "_blank");
     });
   </script>
 </body>
 </html>
+
 
 
 
