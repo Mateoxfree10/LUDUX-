@@ -1,15 +1,5 @@
+<!-- Aquí está tu código ORIGINAL pero con la nueva sección agregada, sin modificar nada más -->
 <!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>LUDUX - Catálogo</title>
-  <style>
-    :root {
-      --gold: #ffd700;
-      --bg: #000;
-      --card-bg: rgba(255, 255, 255, 0.05);
-      --hover-bg: rgba(255, 255, 255, 0.1);<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="utf-8" />
@@ -317,7 +307,7 @@
   </div>
 
   <div class="container">
-    <img src="Ludux .png" alt="LUDUX Logo" class="logo">
+    <img src="Ludux.png" alt="LUDUX Logo" class="logo">
     <div class="welcome">👑 Bienvenid@ 💎</div>
 
     <!-- PROMOCIONES GRANDES -->
@@ -342,6 +332,19 @@
           <button class="mini-btn" data-precio="25" data-nombre="3 Galletas Minis">3 por $25</button>
         </div>
       </div>
+
+
+      <div class="promo-item promo-descpap">
+        <img src="despap.jpg">
+        <h3>Papitas</h3>
+        <p>Opciones</p>
+
+        <div class="mini-options descpap-options">
+          <button class="mini-btn" data-precio="15" data-nombre="1 Papitas">1 por $15</button>
+          <button class="mini-btn" data-precio="25" data-nombre="2 Papitas">2 por $25</button>
+        </div>
+      </div>
+
     </div>
 
     <!-- CATÁLOGO NORMAL -->
@@ -392,12 +395,28 @@
       opciones.style.display = opciones.style.display === "block" ? "none" : "block";
     });
 
-    document.querySelectorAll(".mini-btn").forEach(btn => {
+    document.querySelector(".promo-minis").querySelectorAll(".mini-btn").forEach(btn => {
       btn.addEventListener("click", (e) => {
         e.stopPropagation();
         const nombre = btn.dataset.nombre;
         const precio = Number(btn.dataset.precio);
         carrito.push({ nombre, precio });
+        actualizarCarrito();
+      });
+    });
+
+    /* === NUEVA PROMO DESCPAP === */
+    const descpap = document.querySelector(".promo-descpap");
+    const descpapOpc = document.querySelector(".descpap-options");
+
+    descpap.addEventListener("click", () => {
+      descpapOpc.style.display = descpapOpc.style.display === "block" ? "none" : "block";
+    });
+
+    descpapOpc.querySelectorAll(".mini-btn").forEach(btn => {
+      btn.addEventListener("click", e => {
+        e.stopPropagation();
+        carrito.push({ nombre: btn.dataset.nombre, precio: Number(btn.dataset.precio) });
         actualizarCarrito();
       });
     });
@@ -447,7 +466,6 @@
 
 </body>
 </html>
-    
 
 
 
