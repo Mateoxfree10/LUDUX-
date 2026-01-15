@@ -1,472 +1,517 @@
-<!-- Aquí está tu código ORIGINAL pero con la nueva sección agregada, sin modificar nada más -->
-<!DOCTYPE html>
+
+
 <html lang="es">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>LUDUX - Catálogo</title>
-  <style>
-    :root {
-      --gold: #ffd700;
-      --bg: #000;
-      --card-bg: rgba(255, 255, 255, 0.05);
-      --hover-bg: rgba(255, 255, 255, 0.1);
-    }
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LUDUX - Catálogo</title>
+<style>
+:root{
+  --gold:#ffd700;
+  --bg:#000;
+  --card-bg:rgba(255,255,255,.05);
+  --hover-bg:rgba(255,255,255,.1);
+}
+body{
+  margin:0;
+  font-family:Inter,sans-serif;
+  background:var(--bg);
+  color:#fff;
+}
+.container{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  padding:20px;
+}
+.logo{
+  width:180px;
+  margin-bottom:10px;
+  animation:float 3s infinite,glow 4s infinite;
+}
+@keyframes float{50%{transform:translateY(-5px)}}
+@keyframes glow{50%{filter:drop-shadow(0 0 25px gold)}}
+.welcome{
+  color:var(--gold);
+  font-size:1.6rem;
+  margin-bottom:20px;
+}
 
-    body {
-      margin: 0;
-      padding: 0;
-      font-family: "Inter", sans-serif;
-      background-color: var(--bg);
-      color: #fff;
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-      overflow-x: hidden;
-    }
+/* --- CATÁLOGO ESPACIOSO --- */
+.catalogo{
+  display:grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 25px; /* Más espacio entre tarjetas */
+  width: 100%;
+  max-width: 600px;
+  padding: 10px;
+}
 
-    .container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 20px;
-    }
+#snacks .catalogo {
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+}
 
-    .logo {
-      width: 180px;
-      height: auto;
-      margin-bottom: 10px;
-      animation: float 3s ease-in-out infinite, glow 4s ease-in-out infinite;
-      filter: drop-shadow(0 0 15px rgba(255,215,0,0.4));
-    }
+.item{
+  background:var(--card-bg);
+  border-radius:14px;
+  padding: 12px;
+  text-align:center;
+  cursor:pointer;
+  transition:.3s;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.item:hover{transform:scale(1.05);background:var(--hover-bg)}
 
-    @keyframes float {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-5px); }
-    }
+.item img{
+  width: 100%;
+  border-radius:10px;
+  margin-bottom: 10px; /* Espacio bajo la imagen */
+}
 
-    @keyframes glow {
-      0%, 100% { filter: drop-shadow(0 0 10px rgba(255,215,0,0.4)); }
-      50% { filter: drop-shadow(0 0 25px rgba(255,215,0,0.8)); }
-    }
+.item h3 {
+  font-size: 0.95rem; /* Texto un poco más pequeño para que quepa */
+  margin: 5px 0;
+  line-height: 1.2;
+}
 
-    .welcome {
-      font-size: 1.6rem;
-      font-weight: bold;
-      color: var(--gold);
-      text-shadow: 0 0 8px rgba(255,215,0,0.6), 0 0 16px rgba(255,215,0,0.3);
-      margin-bottom: 25px;
-      text-align: center;
-    }
+.item p{
+  color:var(--gold);
+  font-weight:bold;
+  margin: 5px 0 0 0;
+  font-size: 1.1rem;
+}
 
-    .catalogo {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-      gap: 15px;
-      width: 100%;
-      max-width: 600px;
-      margin-bottom: 40px;
-    }
+/* Marcador de selección */
+.selected-mark {
+  position: absolute;
+  top: 5px;
+  left: 5px;
+  background: var(--gold);
+  color: black;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: none;
+  font-weight: bold;
+  line-height: 22px;
+  z-index: 2;
+}
+.item.active .selected-mark { display: block; }
 
-    .item {
-      background: var(--card-bg);
-      border-radius: 14px;
-      padding: 15px;
-      text-align: center;
-      transition: all 0.3s ease;
-      box-shadow: 0 2px 8px rgba(255,255,255,0.1);
-      cursor: pointer;
-    }
+.promo-container{
+  display:flex;
+  gap:15px;
+  width:100%;
+  max-width:700px;
+  margin-bottom:25px;
+}
+.promo-item{
+  flex:1;
+  background:var(--card-bg);
+  padding:15px;
+  border-radius:14px;
+  cursor:pointer;
+  transition:.3s;
+  text-align:center;
+}
+.promo-item:hover{transform:scale(1.05);background:var(--hover-bg)}
 
-    .item:hover {
-      transform: scale(1.06);
-      background: var(--hover-bg);
-      box-shadow: 0 0 25px rgba(255,215,0,0.4);
-    }
+.cart-icon{
+  position:fixed;
+  top:15px;
+  right:20px;
+  background:none;
+  border:none;
+  z-index: 100;
+}
+.cart-icon img{width:55px}
+.cart-count{
+  position:absolute;
+  top:-5px;
+  right:-5px;
+  background:black;
+  color:gold;
+  padding:4px 8px;
+  border-radius:50%;
+  font-size:.8rem;
+}
+.cart-popup{
+  position:fixed;
+  top:90px;
+  right:15px;
+  background:black;
+  border:2px solid gold;
+  padding:15px;
+  border-radius:15px;
+  display:none;
+  width:260px;
+  z-index: 101;
+}
+.cart-item-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #333;
+  padding: 8px 0;
+  font-size: 0.9rem;
+}
+.remove-btn {
+  color: var(--gold);
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 1.2rem;
+  padding: 0 5px;
+}
 
-    .item img {
-      width: 100%;
-      border-radius: 10px;
-      margin-bottom: 10px;
-    }
-
-    .item h3 {
-      margin: 5px 0;
-      font-size: 1rem;
-      color: #fff;
-    }
-
-    .item p {
-      margin: 0;
-      color: var(--gold);
-      font-weight: bold;
-    }
-
-    .promo-container {
-      display: flex;
-      width: 100%;
-      max-width: 800px;
-      gap: 15px;
-      margin-bottom: 25px;
-    }
-
-    .promo-item {
-      flex: 1;
-      background: var(--card-bg);
-      padding: 10px;
-      border-radius: 14px;
-      text-align: center;
-      cursor: pointer;
-      transition: 0.3s ease;
-      box-shadow: 0 2px 8px rgba(255,255,255,0.1);
-    }
-
-    .promo-item:hover {
-      transform: scale(1.03);
-      background: var(--hover-bg);
-    }
-
-    .promo-item img {
-      width: 100%;
-      border-radius: 10px;
-    }
-
-    .mini-options {
-      display: none;
-      background: rgba(255,255,255,0.05);
-      padding: 10px;
-      border-radius: 10px;
-      margin-top: 10px;
-    }
-
-    .mini-btn {
-      width: 100%;
-      margin: 5px 0;
-      padding: 10px;
-      border: none;
-      border-radius: 8px;
-      background: var(--gold);
-      color: #000;
-      font-weight: bold;
-      cursor: pointer;
-      transition: 0.2s;
-    }
-
-    .mini-btn:hover {
-      transform: scale(1.05);
-      background: #ffe34d;
-    }
-
-    .catalogo-img {
-      width: 100%;
-      max-width: 800px;
-      border-radius: 20px;
-      box-shadow: 0 0 25px rgba(255,255,255,0.15);
-      margin-bottom: 30px;
-      animation: appear 1s ease-in-out, floatRight 6s ease-in-out infinite;
-    }
-
-    @keyframes floatRight {
-      0%, 100% { transform: scale(1) translateY(0); }
-      50% { transform: scale(1.02) translateY(-6px); }
-    }
-
-    @keyframes appear {
-      from { opacity: 0; transform: scale(0.9); }
-      to { opacity: 1; transform: scale(1); }
-    }
-
-    .cart-icon {
-      position: fixed;
-      top: 15px;
-      right: 20px;
-      background: none;
-      border: none;
-      cursor: pointer;
-      z-index: 1000;
-      animation: glowCart 3s infinite ease-in-out;
-    }
-
-    .cart-icon img {
-      width: 55px;
-      height: auto;
-      filter: drop-shadow(0 0 15px rgba(255,215,0,0.6));
-      transition: transform 0.3s ease;
-    }
-
-    .cart-icon img:hover {
-      transform: scale(1.1);
-      filter: drop-shadow(0 0 25px rgba(255,215,0,0.9));
-    }
-
-    @keyframes glowCart {
-      0%, 100% { filter: drop-shadow(0 0 15px rgba(255,215,0,0.6)); }
-      50% { filter: drop-shadow(0 0 25px rgba(255,215,0,0.9)); }
-    }
-
-    .cart-count {
-      position: absolute;
-      top: -5px;
-      right: -5px;
-      background: #000;
-      color: var(--gold);
-      font-weight: bold;
-      border-radius: 50%;
-      padding: 4px 8px;
-      font-size: 0.8rem;
-      border: 1px solid var(--gold);
-    }
-
-    .cart-popup {
-      position: fixed;
-      top: 85px;
-      right: 15px;
-      background: rgba(0,0,0,0.95);
-      border: 2px solid var(--gold);
-      border-radius: 15px;
-      padding: 20px;
-      width: 280px;
-      box-shadow: 0 0 25px rgba(255,215,0,0.4);
-      display: none;
-      z-index: 999;
-    }
-
-    .cart-popup h2 {
-      color: var(--gold);
-      font-size: 1.2rem;
-      margin-top: 0;
-      text-align: center;
-    }
-
-    .cart-items {
-      max-height: 200px;
-      overflow-y: auto;
-      margin-bottom: 10px;
-    }
-
-    .cart-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-bottom: 1px solid rgba(255,255,255,0.1);
-      padding: 5px 0;
-      font-size: 0.9rem;
-    }
-
-    .remove-item {
-      color: var(--gold);
-      cursor: pointer;
-      font-weight: bold;
-      font-size: 1rem;
-      transition: 0.3s;
-    }
-
-    .remove-item:hover {
-      color: #fff;
-      text-shadow: 0 0 6px var(--gold);
-    }
-
-    .total {
-      text-align: right;
-      font-weight: bold;
-      color: var(--gold);
-      margin-bottom: 10px;
-    }
-
-    .whatsapp-btn {
-      width: 100%;
-      background-color: var(--gold);
-      color: #000;
-      font-weight: bold;
-      padding: 10px;
-      border-radius: 8px;
-      border: none;
-      cursor: pointer;
-      transition: 0.3s ease;
-    }
-
-    .whatsapp-btn:hover {
-      background-color: #ffe34d;
-      transform: scale(1.05);
-    }
-
-  </style>
+.whatsapp-btn, .continue-btn {
+  width:100%;
+  background:gold;
+  border:none;
+  padding:12px;
+  font-weight:bold;
+  border-radius:8px;
+  margin-top: 10px;
+  cursor: pointer;
+}
+.back-btn{
+  margin-bottom:20px;
+  background:gold;
+  color:black;
+  padding:10px 20px;
+  border:none;
+  border-radius:8px;
+  font-weight:bold;
+  cursor:pointer;
+}
+#msg-error { color: #ff4444; margin-top: 10px; font-weight: bold; text-align: center; }
+</style>
 </head>
-
 <body>
-  <button class="cart-icon">
-    <img src="Carrito.png" alt="Carrito dorado">
-    <span class="cart-count">0</span>
-  </button>
 
-  <div class="cart-popup">
-    <h2>Tu carrito</h2>
-    <div class="cart-items"></div>
-    <div class="total">Total: $0.00</div>
-    <button class="whatsapp-btn">Enviar por WhatsApp 💬</button>
-  </div>
+<button class="cart-icon">
+  <img src="Carrito.png">
+  <span class="cart-count">0</span>
+</button>
 
-  <div class="container">
-    <img src="Ludux .png" alt="LUDUX Logo" class="logo">
-    <div class="welcome">👑 Bienvenid@ 💎</div>
+<div class="cart-popup">
+  <h3>Tu carrito</h3>
+  <div id="cart-items-list"></div>
+  <p class="total">Total: $0</p>
+  <button class="whatsapp-btn">Enviar por WhatsApp</button>
+</div>
 
-    <!-- PROMOCIONES GRANDES -->
+<div class="container">
+  <img src="Ludux.png" class="logo">
+  <div class="welcome">👑 Bienvenid@ 💎</div>
+
+  <section id="inicio">
     <div class="promo-container">
-
-      <!-- Dinamita -->
-      <div class="promo-item promo-dinamita">
-        <img src="dinamita.jpg">
-        <h3>Dinamita</h3>
-        <p>$12.00</p>
+      <div class="promo-item" onclick="abrirPines()">
+        <img src="pines.png" width="200">
+        <h3>PINES</h3>
       </div>
-
-      <!-- Galletas Minis -->
-      <div class="promo-item promo-minis">
-        <img src="minis.jpg">
-        <h3>Galletas Minis</h3>
-        <p>Opciones</p>
-
-        <div class="mini-options">
-          <button class="mini-btn" data-precio="11" data-nombre="1 Galleta Minis">1 por $11</button>
-          <button class="mini-btn" data-precio="18" data-nombre="2 Galletas Minis">2 por $18</button>
-          <button class="mini-btn" data-precio="25" data-nombre="3 Galletas Minis">3 por $25</button>
-        </div>
+      <div class="promo-item" onclick="abrirSnacks()">
+        <img src="snacks.png" width="200">
+        <h3>SNACKS</h3>
       </div>
-
-
-      <div class="promo-item promo-descpap">
-        <img src="despap.jpg">
-        <h3>Papitas</h3>
-        <p>Opciones</p>
-
-        <div class="mini-options descpap-options">
-          <button class="mini-btn" data-precio="15" data-nombre="1 Papitas">1 por $15</button>
-          <button class="mini-btn" data-precio="25" data-nombre="2 Papitas">2 por $25</button>
-        </div>
-      </div>
-
     </div>
+  </section>
 
-    <!-- CATÁLOGO NORMAL -->
+  <section id="pines" style="display:none">
+    <button class="back-btn" onclick="volver()">⬅ Volver</button>
+<div style="
+  margin: 25px auto 10px;
+  padding: 14px 18px;
+  max-width: 360px;
+  text-align: center;
+  border-radius: 14px;
+  border: 1.5px solid gold;
+  background: rgba(255,215,0,0.08);
+  color: gold;
+  font-weight: 600;
+  font-size: 0.95rem;
+  box-shadow: 0 0 15px rgba(255,215,0,0.25);
+">
+  ✨🚨 AVISO 🚨✨<br>
+  <span style="font-size: 1rem; font-weight: 400; color: #ddd;">
+    Cada pin se elabora por encargo para asegurar calidad, resistencia y un acabado profesional.
+
+El tiempo de entrega es pasado mañana, contado desde el día de la confirmación del diseño.
+  </span>
+</div>    
+
     <div class="catalogo">
-      <div class="item"><img src="galletas.png"><h3>Galletas Mini</h3><p>$10.00</p></div>
-      <div class="item"><img src="galletas.png"><h3>Mamut Mini</h3><p>$5.00</p></div>
-      <div class="item"><img src="roll ups.png"><h3>Roll Ups</h3><p>$8.00</p></div>
-      <div class="item"><img src="roll ups.png"><h3>2 Roll Ups</h3><p>$14.00</p></div>
-      <div class="item"><img src="brownie.png"><h3>Brownie</h3><p>$10.00</p></div>
-      <div class="item"><img src="brownie.png"><h3>2 Brownies</h3><p>$15.00</p></div>
-      <div class="item"><img src="Papitas.png"><h3>Papitas</h3><p>$15.00</p></div>
-      <div class="item"><img src="calaveritas.jpg"><h3>Galleta Calaverita</h3><p>$6.00</p></div>
-      <div class="item"><img src="calaveritas.jpg"><h3>2 Galletas Calaverita</h3><p>$10.00</p></div>
+      <div class="item" onclick="abrirSubCatalogo('Pin', 20, 1)"><img src="Luduxpin.png"><h3>Pin</h3><p>$20</p></div>
+      <div class="item" onclick="agregarAlCarrito('Pin personalizado', 25)"><img src="Luduxpinper.png"><h3>Pin personalizado</h3><p>$25</p></div>
+      <div class="item" onclick="abrirSubCatalogo('3 Pines', 50, 3)"><img src="Luduxpines.png"><h3>3 Pines</h3><p>$50</p></div>
+      <div class="item" onclick="agregarAlCarrito('3 Pines personalizados', 65)"><img src="Luduxpinesper.png"><h3>3 Pines personalizados</h3><p>$65</p></div>
     </div>
 
-    <img src="catálogo simple.png" class="catalogo-img">
-  </div>
 
-  <script>
-    let carrito = [];
-    const cartCount = document.querySelector(".cart-count");
-    const cartPopup = document.querySelector(".cart-popup");
-    const cartItems = document.querySelector(".cart-items");
-    const totalDisplay = document.querySelector(".total");
-    const cartIcon = document.querySelector(".cart-icon");
-    const whatsappBtn = document.querySelector(".whatsapp-btn");
+  </section>
 
-    document.querySelectorAll(".item").forEach(item => {
-      item.addEventListener("click", () => {
-        const nombre = item.querySelector("h3").textContent;
-        const precio = parseFloat(item.querySelector("p").textContent.replace("$",""));
-        carrito.push({ nombre, precio });
-        actualizarCarrito();
-      });
-    });
+  <section id="sub-catalogo-pines" style="display:none">
+    <button class="back-btn" onclick="volverAPines()">⬅ Volver a Opciones</button>
+    <h2 id="titulo-sub" style="color:var(--gold); text-align:center; margin-bottom:5px;">Selecciona tu diseño</h2>
+    <p id="instruccion-sub" style="text-align:center; color:#aaa; margin-bottom:15px;"></p>
+    
+    <div class="catalogo" id="galeria-pines">
+      <div class="item" onclick="toggleSeleccion(this, 'Diseño 1')">
+        <div class="selected-mark">✓</div>
+        <img src="Mikey.png"><p>Diseño 1</p>
+      </div>
+      <div class="item" onclick="toggleSeleccion(this, 'Diseño 2')">
+        <div class="selected-mark">✓</div>
+        <img src="Rengoku.png"><p>Diseño 2</p>
+      </div>
+      <div class="item" onclick="toggleSeleccion(this, 'Diseño 3')">
+        <div class="selected-mark">✓</div>
+        <img src="Luigi.Png"><p>Diseño 3</p>
+      </div>
+      <div class="item" onclick="toggleSeleccion(this, 'Diseño 4')">
+        <div class="selected-mark">✓</div>
+        <img src="Pokebola.png"><p>Diseño 4</p>
+      </div>
+      <div class="item" onclick="toggleSeleccion(this, 'Diseño 5')">
+        <div class="selected-mark">✓</div>
+        <img src="Porshe.png"><p>Diseño 5</p>
+      </div>
+     <div class="item" onclick="toggleSeleccion(this, 'Diseño 6')">
+        <div class="selected-mark">✓</div>
+        <img src="Monopoly.png"><p>Diseño 6</p>
+      </div>
+     <div class="item" onclick="toggleSeleccion(this, 'Diseño 7')">
+        <div class="selected-mark">✓</div>
+        <img src="Ajedrez.png"><p>Diseño 7</p>
+      </div>
+     <div class="item" onclick="toggleSeleccion(this, 'Diseño 8')">
+        <div class="selected-mark">✓</div>
+        <img src="Violín.png"><p>Diseño 8</p>
+      </div>
+     <div class="item" onclick="toggleSeleccion(this, 'Diseño 9')">
+        <div class="selected-mark">✓</div>
+        <img src="Estadio.png"><p>Diseño 9</p>
+      </div>
+     <div class="item" onclick="toggleSeleccion(this, 'Diseño 10')">
+        <div class="selected-mark">✓</div>
+        <img src="Peces.png"><p>Diseño 10</p>
+      </div>
+<div class="item" onclick="toggleSeleccion(this, 'Diseño 11')">
+        <div class="selected-mark">✓</div>
+        <img src="Play.png"><p>Diseño 11</p>
+      </div>
+<div class="item" onclick="toggleSeleccion(this, 'Diseño 12')">
+        <div class="selected-mark">✓</div>
+        <img src="Xbox.png"><p>Diseño 12</p>
+      </div>
+<div class="item" onclick="toggleSeleccion(this, 'Diseño 13')">
+        <div class="selected-mark">✓</div>
+        <img src="Kuromi.png"><p>Diseño 13</p>
+      </div>
+<div class="item" onclick="toggleSeleccion(this, 'Diseño 14')">
+        <div class="selected-mark">✓</div>
+        <img src="Mariposa.png"><p>Diseño 14</p>
+      </div>
+<div class="item" onclick="toggleSeleccion(this, 'Diseño 15')">
+        <div class="selected-mark">✓</div>
+        <img src="Chino.png"><p>Diseño 15</p>
+      </div>
+<div class="item" onclick="toggleSeleccion(this, 'Diseño 16')">
+        <div class="selected-mark">✓</div>
+        <img src="Pictures.png"><p>Diseño 16</p>
+      </div>
+<div class="item" onclick="toggleSeleccion(this, 'Diseño 17')">
+        <div class="selected-mark">✓</div>
+        <img src="Juvenile.png"><p>Diseño 17</p>
+      </div>
+<div class="item" onclick="toggleSeleccion(this, 'Diseño 18')">
+        <div class="selected-mark">✓</div>
+        <img src="Graffiti.png"><p>Diseño 18</p>
+      </div>
+<div class="item" onclick="toggleSeleccion(this, 'Diseño 19')">
+        <div class="selected-mark">✓</div>
+        <img src="Happytime.png"><p>Diseño 19</p>
+      </div>
+<div class="item" onclick="toggleSeleccion(this, 'Diseño 20')">
+        <div class="selected-mark">✓</div>
+        <img src="Rapper.png"><p>Diseño 20</p>
+      </div>
+<div class="item" onclick="toggleSeleccion(this, 'Diseño 21')">
+        <div class="selected-mark">✓</div>
+        <img src="Stronaut.png"><p>Diseño 21</p>
+      </div>
+<div class="item" onclick="toggleSeleccion(this, 'Diseño 22')">
+        <div class="selected-mark">✓</div>
+        <img src="Summerday.png"><p>Diseño 22</p>
+      </div>
+<div class="item" onclick="toggleSeleccion(this, 'Diseño 23')">
+        <div class="selected-mark">✓</div>
+        <img src="Playgame.png"><p>Diseño 23</p>
+      </div>
 
-    /* === DINAMITA === */
-    document.querySelector(".promo-dinamita").addEventListener("click", () => {
-      carrito.push({ nombre: "Dinamita", precio: 12 });
-      actualizarCarrito();
-    });
+<div class="item" onclick="toggleSeleccion(this, 'Diseño 24')">
+        <div class="selected-mark">✓</div>
+        <img src="Summervacation.png"><p>Diseño 24</p>
+      </div>
 
-    /* === MINIS: mostrar opciones === */
-    const minis = document.querySelector(".promo-minis");
-    const opciones = minis.querySelector(".mini-options");
+<div class="item" onclick="toggleSeleccion(this, 'Diseño 25')">
+        <div class="selected-mark">✓</div>
+        <img src="Summervacation2.png"><p>Diseño 25</p>
+      </div>
+<div class="item" onclick="toggleSeleccion(this, 'Diseño 26')">
+        <div class="selected-mark">✓</div>
+        <img src="Spiderman.png"><p>Diseño 26</p>
+      </div>
+<div class="item" onclick="toggleSeleccion(this, 'Diseño 27')">
+        <div class="selected-mark">✓</div>
+        <img src="Lucha.png"><p>Diseño 27</p>
+      </div>
+<div class="item" onclick="toggleSeleccion(this, 'Diseño 28')">
+        <div class="selected-mark">✓</div>
+        <img src="Chucky.png"><p>Diseño 28</p>
+      </div>
 
-    minis.addEventListener("click", () => {
-      opciones.style.display = opciones.style.display === "block" ? "none" : "block";
-    });
 
-    document.querySelector(".promo-minis").querySelectorAll(".mini-btn").forEach(btn => {
-      btn.addEventListener("click", (e) => {
-        e.stopPropagation();
-        const nombre = btn.dataset.nombre;
-        const precio = Number(btn.dataset.precio);
-        carrito.push({ nombre, precio });
-        actualizarCarrito();
-      });
-    });
+</div>
+<div style="
+  margin: 25px auto 10px;
+  padding: 14px 18px;
+  max-width: 360px;
+  text-align: center;
+  border-radius: 14px;
+  border: 1.5px solid gold;
+  background: rgba(255,215,0,0.08);
+  color: gold;
+  font-weight: 600;
+  font-size: 0.95rem;
+  box-shadow: 0 0 15px rgba(255,215,0,0.25);
+">
+  ✨ Pronto se agregarán más diseños ✨<br>
+  <span style="font-size: 0.85rem; font-weight: 400; color: #ddd;">
+    Gracias por tu preferencia, lo mejor está por llegar.
+  </span>
+</div>    
+<div style="max-width:300px; margin: 0 auto;">
+      <p id="msg-error"></p>
+      <button id="btn-continuar" class="continue-btn" onclick="confirmarSeleccion()">Continuar</button>
+    </div>
+  </section>
 
-    /* === NUEVA PROMO DESCPAP === */
-    const descpap = document.querySelector(".promo-descpap");
-    const descpapOpc = document.querySelector(".descpap-options");
+  <section id="snacks" style="display:none">
+    <button class="back-btn" onclick="volver()">⬅ Volver</button>
+    <div class="catalogo">
+      <div class="item" onclick="agregarAlCarrito('Galletas Mini', 10)"><img src="galletas.png"><h3>Galletas Mini</h3><p>$10.00</p></div>
+      <div class="item" onclick="agregarAlCarrito('Mamut Mini', 5)"><img src="galletas.png"><h3>Mamut Mini</h3><p>$5.00</p></div>
+      <div class="item" onclick="agregarAlCarrito('Roll Ups', 8)"><img src="roll ups.png"><h3>Roll Ups</h3><p>$8.00</p></div>
+      <div class="item" onclick="agregarAlCarrito('2 Roll Ups', 14)"><img src="roll ups.png"><h3>2 Roll Ups</h3><p>$14.00</p></div>
+      <div class="item" onclick="agregarAlCarrito('Brownie', 10)"><img src="brownie.png"><h3>Brownie</h3><p>$10.00</p></div>
+      <div class="item" onclick="agregarAlCarrito('2 Brownies', 15)"><img src="brownie.png"><h3>2 Brownies</h3><p>$15.00</p></div>
+      <div class="item" onclick="agregarAlCarrito('Papitas', 15)"><img src="Papitas.png"><h3>Papitas</h3><p>$15.00</p></div>
+      <div class="item" onclick="agregarAlCarrito('Galleta Calaverita', 6)"><img src="calaveritas.jpg"><h3>Galleta Calaverita</h3><p>$6.00</p></div>
+      <div class="item" onclick="agregarAlCarrito('2 Galletas Calaverita', 10)"><img src="calaveritas.jpg"><h3>2 Galletas Calaverita</h3><p>$10.00</p></div>
+    </div>
+  </section>
+</div>
 
-    descpap.addEventListener("click", () => {
-      descpapOpc.style.display = descpapOpc.style.display === "block" ? "none" : "block";
-    });
+<script>
+let carrito=[];
+let seleccionActualPrecio = 0;
+let seleccionActualNombre = "";
+let limiteSeleccion = 1;
+let itemsSeleccionados = [];
 
-    descpapOpc.querySelectorAll(".mini-btn").forEach(btn => {
-      btn.addEventListener("click", e => {
-        e.stopPropagation();
-        carrito.push({ nombre: btn.dataset.nombre, precio: Number(btn.dataset.precio) });
-        actualizarCarrito();
-      });
-    });
+const cartCount=document.querySelector(".cart-count");
+const cartPopup=document.querySelector(".cart-popup");
+const cartItemsList=document.getElementById("cart-items-list");
+const totalDisplay=document.querySelector(".total");
 
-    function actualizarCarrito() {
-      cartCount.textContent = carrito.length;
-      cartItems.innerHTML = "";
-      let total = 0;
-      carrito.forEach((i, index) => {
-        total += i.precio;
-        cartItems.innerHTML += `
-          <div class="cart-item">
-            <span>${i.nombre} - $${i.precio.toFixed(2)}</span>
-            <span class="remove-item" data-index="${index}">✖</span>
-          </div>`;
-      });
-      totalDisplay.textContent = "Total: $" + total.toFixed(2);
+function abrirPines(){ ocultarTodo(); pines.style.display="block"; }
+function abrirSnacks(){ ocultarTodo(); snacks.style.display="block"; }
 
-      document.querySelectorAll(".remove-item").forEach(btn => {
-        btn.addEventListener("click", e => {
-          const index = e.target.dataset.index;
-          carrito.splice(index, 1);
-          actualizarCarrito();
-        });
-      });
+function abrirSubCatalogo(nombre, precio, limite){
+  ocultarTodo();
+  seleccionActualPrecio = precio;
+  seleccionActualNombre = nombre;
+  limiteSeleccion = limite;
+  itemsSeleccionados = [];
+  document.querySelectorAll('#galeria-pines .item').forEach(el => el.classList.remove('active'));
+  document.getElementById('msg-error').innerText = "";
+  document.getElementById('titulo-sub').innerText = "Modelos para " + nombre;
+  document.getElementById('instruccion-sub').innerText = limite > 1 ? `Elige exactamente ${limite} diseños` : "Elige un diseño";
+  document.getElementById('sub-catalogo-pines').style.display="block";
+}
+
+function volver(){ ocultarTodo(); inicio.style.display="block"; }
+function volverAPines(){ ocultarTodo(); pines.style.display="block"; }
+function ocultarTodo(){
+  inicio.style.display="none"; pines.style.display="none";
+  snacks.style.display="none"; document.getElementById('sub-catalogo-pines').style.display="none";
+}
+
+function toggleSeleccion(elemento, nombreDiseno) {
+  if (elemento.classList.contains('active')) {
+    elemento.classList.remove('active');
+    itemsSeleccionados = itemsSeleccionados.filter(i => i !== nombreDiseno);
+  } else {
+    if (itemsSeleccionados.length < limiteSeleccion) {
+      elemento.classList.add('active');
+      itemsSeleccionados.push(nombreDiseno);
+      document.getElementById('msg-error').innerText = "";
     }
+  }
+}
 
-    cartIcon.addEventListener("click", () => {
-      cartPopup.style.display = cartPopup.style.display === "block" ? "none" : "block";
-    });
+function confirmarSeleccion() {
+  if (itemsSeleccionados.length < limiteSeleccion) {
+    document.getElementById('msg-error').innerText = `Te falta elegir ${limiteSeleccion - itemsSeleccionados.length} diseño(s)`;
+    return;
+  }
+  let nombreFinal = seleccionActualNombre + " (" + itemsSeleccionados.join(", ") + ")";
+  agregarAlCarrito(nombreFinal, seleccionActualPrecio);
+  volverAPines();
+}
 
-    whatsappBtn.addEventListener("click", () => {
-      if (carrito.length === 0) {
-        alert("Tu carrito está vacío 🛍️");
-        return;
-      }
+function agregarAlCarrito(nombre, precio) {
+  carrito.push({ id: Date.now(), nombre: nombre, precio: precio });
+  actualizar();
+}
 
-      let mensaje = "Hola, me gustaría ordenar:\n";
-      carrito.forEach(item => mensaje += `- ${item.nombre} ($${item.precio})\n`);
-      const total = carrito.reduce((sum, i) => sum + i.precio, 0);
-      mensaje += `\nTotal: $${total.toFixed(2)}`;
+function eliminarDelCarrito(id) {
+  carrito = carrito.filter(item => item.id !== id);
+  actualizar();
+}
 
-      const url = `https://wa.me/524778052373?text=${encodeURIComponent(mensaje)}`;
-      window.open(url, "_blank");
-    });
-  </script>
+function actualizar(){
+  cartCount.textContent=carrito.length;
+  cartItemsList.innerHTML="";
+  let total=0;
+  carrito.forEach((item)=>{
+    total+=item.precio;
+    cartItemsList.innerHTML+=`
+      <div class="cart-item-row">
+        <span>${item.nombre} - $${item.precio}</span>
+        <span class="remove-btn" onclick="eliminarDelCarrito(${item.id})">✖</span>
+      </div>`;
+  });
+  totalDisplay.textContent="Total: $"+total;
+}
 
+document.querySelector(".cart-icon").onclick=()=>{
+  cartPopup.style.display=cartPopup.style.display==="block"?"none":"block";
+};
+
+document.querySelector(".whatsapp-btn").onclick=()=>{
+  if(carrito.length === 0) return;
+  let msg="Hola Ludux, quiero ordenar:\n";
+  carrito.forEach(i=>msg+=`- ${i.nombre} ($${i.precio})\n`);
+  msg += `\nTotal: $${carrito.reduce((a,b)=>a+b.precio,0)}`;
+  window.open("https://wa.me/524778052373?text="+encodeURIComponent(msg));
+};
+</script>
 </body>
 </html>
-
-
 
  
