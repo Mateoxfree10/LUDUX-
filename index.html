@@ -1,7 +1,5 @@
 
 
-
-
 <html lang="es">
 <head>
 <meta charset="utf-8">
@@ -403,60 +401,295 @@ El tiempo de entrega es pasado mañana, contado desde el día de la confirmació
   <section id="snacks" style="display:none">
     <button class="back-btn" onclick="volver()">⬅ Volver</button>
     <div class="catalogo">
-  <div class="item" onclick="agregarAlCarrito('Galletas Mini', 10)">
-    <img src="galletas.png"style="max-width:100%; height:auto;">
-    <h3>Galletas Mini</h3>
-    <p>$10.00</p>
+
+<details class="item">
+  <summary style="list-style:none; cursor:pointer;">
+    <img src="despap.jpg" style="max-width:100%; height:auto;">
+    <h3>Papitas</h3>
+    <p>Seleccionar opción</p>
+  </summary>
+
+  <!-- OPCIONES -->
+  <div style="margin-top:10px;">
+    <div class="item" onclick="abrirSabores(1)">
+      <h3>1 Papita</h3>
+      <p>$15.00</p>
+    </div>
+
+    <div class="item" onclick="abrirSabores(2)">
+      <h3>2 Papitas</h3>
+      <p>$25.00</p>
+    </div>
   </div>
 
+  <!-- SABORES -->
+  <div id="sabores-papitas" style="display:none; margin-top:10px;">
+    <div class="item" onclick="toggleSabor(this,'Doritos')">Doritos</div>
+    <div class="item" onclick="toggleSabor(this,'Fritos')">Fritos</div>
+    <div class="item" onclick="toggleSabor(this,'Tostitos')">Tostitos</div>
+    <div class="item" onclick="toggleSabor(this,'Cheetos Torciditos')">Cheetos Torcidos</div>
+    <div class="item" onclick="toggleSabor(this,'Sabritas')">Sabritas</div>
+    <div class="item" onclick="toggleSabor(this,'Rancheritos')">Rancheritos</div>
+    <div class="item" onclick="toggleSabor(this,'Cheetos Flaming')">Cheetos Flaming</div>
+  </div>
+
+
+  <!-- MENSAJE -->
+  <p id="mensaje-papitas"
+     style="display:none; color:#ff4d4d; font-weight:600; margin-top:8px;">
+  </p>
+
+  <!-- CONTINUAR -->
+  <button id="btn-continuar-papitas"
+          class="btn-continuar"
+          style="display:none;"
+          disabled
+          onclick="continuarPapitas()">
+    Continuar
+  </button>
+</details>
+
+<!-- ESTILO BOTÓN -->
+<style>
+.btn-continuar{
+  width:100%;
+  padding:12px;
+  margin-top:12px;
+  font-size:16px;
+  font-weight:bold;
+  border:none;
+  border-radius:12px;
+  background:linear-gradient(135deg,#f5c542,#e6a800);
+  color:#000;
+  opacity:0.5;
+  cursor:not-allowed;
+}
+.btn-continuar.activo{
+  opacity:1;
+  cursor:pointer;
+}
+</style>
+
+<!-- SCRIPT -->
+<script>
+let cantidadPapitas = 0;
+let seleccionadas = [];
+
+function abrirSabores(cantidad){
+  cantidadPapitas = cantidad;
+  seleccionadas = [];
+  limpiarChecks();
+
+  document.getElementById("sabores-papitas").style.display = "block";
+
+  const btn = document.getElementById("btn-continuar-papitas");
+  btn.style.display = "block";
+  btn.disabled = true;
+  btn.classList.remove("activo");
+
+  document.getElementById("mensaje-papitas").style.display = "none";
+}
+
+function toggleSabor(el, sabor){
+  const index = seleccionadas.indexOf(sabor);
+
+  if(index !== -1){
+    seleccionadas.splice(index,1);
+    el.innerHTML = sabor;
+  }else{
+    if(seleccionadas.length >= cantidadPapitas) return;
+    seleccionadas.push(sabor);
+    el.innerHTML = "💎 " + sabor;
+  }
+
+  validarSeleccion();
+}
+
+function validarSeleccion(){
+  const msg = document.getElementById("mensaje-papitas");
+  const btn = document.getElementById("btn-continuar-papitas");
+
+  if(seleccionadas.length === 0){
+    msg.textContent = cantidadPapitas === 1
+      ? "Selecciona un sabor"
+      : "Te falta elegir " + cantidadPapitas + " sabores";
+    msg.style.display = "block";
+    btn.disabled = true;
+    btn.classList.remove("activo");
+    return;
+  }
+
+  if(seleccionadas.length < cantidadPapitas){
+    msg.textContent = "Te falta elegir " + (cantidadPapitas - seleccionadas.length);
+    msg.style.display = "block";
+    btn.disabled = true;
+    btn.classList.remove("activo");
+    return;
+  }
+
+  msg.style.display = "none";
+  btn.disabled = false;
+  btn.classList.add("activo");
+}
+
+function continuarPapitas(){
+  if(cantidadPapitas === 1){
+    agregarAlCarrito(
+      "Unas papitas (" + seleccionadas[0] + ")",
+      15
+    );
+  }
+
+  if(cantidadPapitas === 2){
+    agregarAlCarrito(
+      "Dos papitas (" + seleccionadas.join(", ") + ")",
+      25
+    );
+  }
+
+  cerrarPapitas();
+}
+
+function cerrarPapitas(){
+  document.getElementById("sabores-papitas").style.display = "none";
+  document.getElementById("btn-continuar-papitas").style.display = "none";
+  document.getElementById("mensaje-papitas").style.display = "none";
+
+  cantidadPapitas = 0;
+  seleccionadas = [];
+  limpiarChecks();
+}
+
+function limpiarChecks(){
+  document.querySelectorAll("#sabores-papitas .item").forEach(el=>{
+    el.innerHTML = el.textContent.replace("💎 ","");
+  });
+}
+</script>
+
+
+  <details class="item">
+  <summary style="list-style:none; cursor:pointer;">
+    <img src="galletas2.png" style="max-width:100%; height:auto;">
+    <h3>Galletas</h3>
+    <p>Seleccionar opción</p>
+  </summary>
+
+  <!-- SABORES -->
+  <div id="sabores-galletas" style="margin-top:10px;">
+    <div class="item" onclick="toggleGalleta(this,'Chokis')">Chokis</div>
+    <div class="item" onclick="toggleGalleta(this,'Arcoíris')">Arcoíris</div>
+    <div class="item" onclick="toggleGalleta(this,'Emperador Vainilla')">Emperador Vainilla</div>
+    <div class="item" onclick="toggleGalleta(this,'Emperador Chocolate')">Emperador Chocolate</div>
+  </div>
+
+  <!-- MENSAJE -->
+  <p id="mensaje-galletas"
+     style="display:none; color:#ff4d4d; font-weight:600; margin-top:8px;">
+    Selecciona una galleta
+  </p>
+
+  <!-- CONTINUAR -->
+  <button id="btn-continuar-galletas"
+          class="btn-continuar"
+          style="display:none;"
+          disabled
+          onclick="continuarGalletas()">
+    Continuar
+  </button>
+</details>
+
+<script>
+let galletaSeleccionada = null;
+
+function toggleGalleta(el, sabor){
+  const items = document.querySelectorAll("#sabores-galletas .item");
+
+  if(galletaSeleccionada === sabor){
+    galletaSeleccionada = null;
+    el.innerHTML = sabor;
+  }else{
+    items.forEach(i => i.innerHTML = i.textContent.replace("💎 ",""));
+    galletaSeleccionada = sabor;
+    el.innerHTML = "💎 " + sabor;
+  }
+
+  validarGalleta();
+}
+
+function validarGalleta(){
+  const msg = document.getElementById("mensaje-galletas");
+  const btn = document.getElementById("btn-continuar-galletas");
+
+  btn.style.display = "block";
+
+  if(!galletaSeleccionada){
+    msg.style.display = "block";
+    btn.disabled = true;
+    btn.classList.remove("activo");
+  }else{
+    msg.style.display = "none";
+    btn.disabled = false;
+    btn.classList.add("activo");
+  }
+}
+
+function continuarGalletas(){
+  agregarAlCarrito(
+    "Galleta (" + galletaSeleccionada + ")",
+    10
+  );
+
+  cerrarGalletas();
+}
+
+function cerrarGalletas(){
+  document.getElementById("btn-continuar-galletas").style.display = "none";
+  document.getElementById("mensaje-galletas").style.display = "none";
+
+  document.querySelectorAll("#sabores-galletas .item").forEach(el=>{
+    el.innerHTML = el.textContent.replace("💎 ","");
+  });
+
+  galletaSeleccionada = null;
+}
+</script>
+
+
+<div class="item" onclick="agregarAlCarrito('Mazapán Gigante', 12)">
+    <img src="Mazapán.png"style="max-width:100%; height:auto;">
+    <h3>Mazapán Gigante</h3>
+    <p>$12.00</p>
+  </div>
+
+
   <div class="item" onclick="agregarAlCarrito('Mamut Mini', 5)">
-    <img src="galletas.png"style="max-width:100%; height:auto;">
+    <img src="Mamutmini.png"style="max-width:100%; height:auto;">
     <h3>Mamut Mini</h3>
     <p>$5.00</p>
   </div>
 
-  <div class="item" onclick="agregarAlCarrito('Roll Ups', 8)">
-    <img src="roll ups.png"style="max-width:100%; height:auto;">
-    <h3>Roll Ups</h3>
-    <p>$8.00</p>
+<div class="item" onclick="agregarAlCarrito('Foot', 12)">
+    <img src="Foot2.png"style="max-width:100%; height:auto;">
+    <h3>Foot</h3>
+    <p>$12.00</p>
   </div>
 
-  <div class="item" onclick="agregarAlCarrito('2 Roll Ups', 14)">
-    <img src="roll ups.png"style="max-width:100%; height:auto;">
-    <h3>2 Roll Ups</h3>
-    <p>$14.00</p>
-  </div>
 
   <div class="item" onclick="agregarAlCarrito('Brownie', 10)">
-    <img src="brownie.png"style="max-width:100%; height:auto;">
+    <img src="Brownie2.png"style="max-width:100%; height:auto;">
     <h3>Brownie</h3>
     <p>$10.00</p>
   </div>
 
-  <div class="item" onclick="agregarAlCarrito('2 Brownies', 15)">
-    <img src="brownie.png"style="max-width:100%; height:auto;">
+  <div class="item" onclick="agregarAlCarrito('2 Brownies', 18)">
+    <img src="Brownie2.png"style="max-width:100%; height:auto;">
     <h3>2 Brownies</h3>
-    <p>$15.00</p>
+    <p>$18.00</p>
   </div>
 
-  <div class="item" onclick="agregarAlCarrito('Papitas', 15)">
-    <img src="Papitas.png"style="max-width:100%; height:auto;">
-    <h3>Papitas</h3>
-    <p>$15.00</p>
-  </div>
-
-  <div class="item" onclick="agregarAlCarrito('Galleta Calaverita', 6)">
-    <img src="calaveritas.jpg"style="max-width:100%; height:auto;">
-    <h3>Galleta Calaverita</h3>
-    <p>$6.00</p>
-  </div>
-
-  <div class="item" onclick="agregarAlCarrito('2 Galletas Calaverita', 10)">
-    <img src="calaveritas.jpg"style="max-width:100%; height:auto;">
-    <h3>2 Galletas Calaverita</h3>
-    <p>$10.00</p>
-  </div>
-</div>
+  
+ </div>
   </section>
 </div>
 
@@ -557,3 +790,7 @@ document.querySelector(".whatsapp-btn").onclick=()=>{
 </script>
 </body>
 </html>
+
+
+
+
