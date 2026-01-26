@@ -1,6 +1,4 @@
 
-
-
 <html lang="es">
 <head>
 <meta charset="utf-8">
@@ -187,9 +185,83 @@ body{
   cursor:pointer;
 }
 #msg-error { color: #ff4444; margin-top: 10px; font-weight: bold; text-align: center; }
+
+/* 🚀 ESTILOS PARA LA NUBE POPUP */
+#popup-sanvalentin-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.85);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 99999;
+}
+#popup-sanvalentin-box {
+  position: relative;
+  width: 90%;
+  max-width: 400px;
+  animation: popupFadeIn 0.5s ease;
+}
+#popup-sanvalentin-img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 20px;
+  cursor: pointer; /* Indica que es clickeable */
+  box-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
+}
+#popup-sanvalentin-x {
+  position: absolute;
+  top: -15px;
+  right: -15px;
+  width: 40px;
+  height: 40px;
+  background-color: var(--gold);
+  color: #000;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 24px;
+  font-weight: bold;
+  cursor: pointer;
+  z-index: 100000;
+}
+@keyframes popupFadeIn {
+  from { opacity: 0; transform: scale(0.8); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* ❤️ ESTILOS CORAZONES */
+.heart-fall {
+  position: fixed;
+  top: -10%;
+  font-size: 20px;
+  color: #ff4d4d;
+  user-select: none;
+  pointer-events: none;
+  z-index: 100001; /* MAYOR que el del cartel (99999 y 100000) */
+  animation: fall linear forwards;
+}
+@keyframes fall {
+  to {
+    transform: translateY(110vh) translateX(20px) rotate(360deg);
+    opacity: 0;
+  }
+}
 </style>
 </head>
 <body>
+
+<div id="popup-sanvalentin-overlay">
+  <div id="popup-sanvalentin-box">
+    <div id="popup-sanvalentin-x" onclick="document.getElementById('popup-sanvalentin-overlay').style.display='none'">×</div>
+    <img id="popup-sanvalentin-img" src="Ludux Pines de san valentín.png" onclick="abrirPinesDesdePopup()">
+  </div>
+</div>
 
 <button class="cart-icon">
   <img src="Carrito.png">
@@ -238,13 +310,13 @@ body{
   <span style="font-size: 1rem; font-weight: 400; color: #ddd;">
     Cada pin se elabora por encargo para asegurar calidad, resistencia y un acabado profesional.
 
-El tiempo de entrega es pasado mañana, contado desde el día de la confirmación del diseño.
+El tiempo de entrega desde mañana hasta pasado mañana, contado desde el día de la confirmación del diseño.
   </span>
 </div>    
 
     <div class="catalogo">
       <div class="item" onclick="abrirSubCatalogo('Pin', 20, 1)"><img src="Luduxpin.png"><h3>Pin</h3><p>$20</p></div>
-      <div class="item" onclick="agregarAlCarrito('Pin personalizado', 25)"><img src="Luduxpinper.png"><h3>Pin personalizado</h3><p>$25</p></div>
+      <div class="item" onclick="agregarAlCarrito('Pin personalizado', 25)"><img src="LuduxSanValentínPer.png"><h3>Pin personalizado</h3><p>$25</p></div>
       <div class="item" onclick="abrirSubCatalogo('3 Pines', 50, 3)"><img src="Luduxpines.png"><h3>3 Pines</h3><p>$50</p></div>
       <div class="item" onclick="agregarAlCarrito('3 Pines personalizados', 65)"><img src="Luduxpinesper.png"><h3>3 Pines personalizados</h3><p>$65</p></div>
     </div>
@@ -258,119 +330,143 @@ El tiempo de entrega es pasado mañana, contado desde el día de la confirmació
     <p id="instruccion-sub" style="text-align:center; color:#aaa; margin-bottom:15px;"></p>
     
     <div class="catalogo" id="galeria-pines">
-      <div class="item" onclick="toggleSeleccion(this, 'Diseño 1')">
+      <div class="item" onclick="toggleSeleccion(this, 'Snoopy')">
         <div class="selected-mark">✓</div>
-        <img src="Mikey.png"><p>Diseño 1</p>
+        <img src="Snoopy Amor.png"><p>Snoopy</p>
       </div>
-      <div class="item" onclick="toggleSeleccion(this, 'Diseño 2')">
+      <div class="item" onclick="toggleSeleccion(this, 'Up Amor')">
         <div class="selected-mark">✓</div>
-        <img src="Rengoku.png"><p>Diseño 2</p>
+        <img src="UpAmor.png"><p>Up Amor</p>
       </div>
-      <div class="item" onclick="toggleSeleccion(this, 'Diseño 3')">
+      <div class="item" onclick="toggleSeleccion(this, 'Novios')">
         <div class="selected-mark">✓</div>
-        <img src="Luigi.png"><p>Diseño 3</p>
+        <img src="NOVIO.png"><p>Novios</p>
       </div>
-      <div class="item" onclick="toggleSeleccion(this, 'Diseño 4')">
+      <div class="item" onclick="toggleSeleccion(this, 'Emoji Enmorado')">
         <div class="selected-mark">✓</div>
-        <img src="Pokebola.png"><p>Diseño 4</p>
+        <img src="EmojiCora.png"><p>Emoji Enmorado</p>
       </div>
-      <div class="item" onclick="toggleSeleccion(this, 'Diseño 5')">
+      <div class="item" onclick="toggleSeleccion(this, 'Novios Bajo La Lluvia')">
         <div class="selected-mark">✓</div>
-        <img src="Porshe.png"><p>Diseño 5</p>
+        <img src="ParejaBajoLluvia.png"><p>Novios Bajo La Lluvia</p>
       </div>
-     <div class="item" onclick="toggleSeleccion(this, 'Diseño 6')">
+      <div class="item" onclick="toggleSeleccion(this, 'Ludux')">
         <div class="selected-mark">✓</div>
-        <img src="Monopoly.png"><p>Diseño 6</p>
+        <img src="LuduxPinVender.png"><p>Ludux</p>
       </div>
-     <div class="item" onclick="toggleSeleccion(this, 'Diseño 7')">
+      <div class="item" onclick="toggleSeleccion(this, 'Mikey')">
         <div class="selected-mark">✓</div>
-        <img src="Ajedrez.png"><p>Diseño 7</p>
+        <img src="Mikey.png"><p>Mikey</p>
       </div>
-     <div class="item" onclick="toggleSeleccion(this, 'Diseño 8')">
+      <div class="item" onclick="toggleSeleccion(this, 'Rengoku')">
         <div class="selected-mark">✓</div>
-        <img src="Violín.png"><p>Diseño 8</p>
+        <img src="Rengoku.png"><p>Rengoku</p>
       </div>
-     <div class="item" onclick="toggleSeleccion(this, 'Diseño 9')">
+      <div class="item" onclick="toggleSeleccion(this, 'Luigi')">
         <div class="selected-mark">✓</div>
-        <img src="Estadio.png"><p>Diseño 9</p>
+        <img src="Luigi.png"><p>Luigi</p>
       </div>
-     <div class="item" onclick="toggleSeleccion(this, 'Diseño 10')">
+      <div class="item" onclick="toggleSeleccion(this, 'Pokebola')">
         <div class="selected-mark">✓</div>
-        <img src="Peces.png"><p>Diseño 10</p>
+        <img src="Pokebola.png"><p>Pokebola</p>
       </div>
-<div class="item" onclick="toggleSeleccion(this, 'Diseño 11')">
+      <div class="item" onclick="toggleSeleccion(this, 'Porshe')">
         <div class="selected-mark">✓</div>
-        <img src="Play.png"><p>Diseño 11</p>
+        <img src="Porshe.png"><p>Porshe</p>
       </div>
-<div class="item" onclick="toggleSeleccion(this, 'Diseño 12')">
+     <div class="item" onclick="toggleSeleccion(this, 'Monopoly')">
         <div class="selected-mark">✓</div>
-        <img src="Xbox.png"><p>Diseño 12</p>
+        <img src="Monopoly.png"><p>Monopoly</p>
       </div>
-<div class="item" onclick="toggleSeleccion(this, 'Diseño 13')">
+     <div class="item" onclick="toggleSeleccion(this, 'Ajedrez')">
         <div class="selected-mark">✓</div>
-        <img src="Kuromi.png"><p>Diseño 13</p>
+        <img src="Ajedrez.png"><p>Ajedrez</p>
       </div>
-<div class="item" onclick="toggleSeleccion(this, 'Diseño 14')">
+     <div class="item" onclick="toggleSeleccion(this, 'Violín')">
         <div class="selected-mark">✓</div>
-        <img src="Mariposa.png"><p>Diseño 14</p>
+        <img src="Violín.png"><p>Violín</p>
       </div>
-<div class="item" onclick="toggleSeleccion(this, 'Diseño 15')">
+     <div class="item" onclick="toggleSeleccion(this, 'Estadio')">
         <div class="selected-mark">✓</div>
-        <img src="Chino.png"><p>Diseño 15</p>
+        <img src="Estadio.png"><p>Estadio</p>
       </div>
-<div class="item" onclick="toggleSeleccion(this, 'Diseño 16')">
+     <div class="item" onclick="toggleSeleccion(this, 'Peces')">
         <div class="selected-mark">✓</div>
-        <img src="Pictures.png"><p>Diseño 16</p>
+        <img src="Peces.png"><p>Peces</p>
       </div>
-<div class="item" onclick="toggleSeleccion(this, 'Diseño 17')">
+<div class="item" onclick="toggleSeleccion(this, 'Play')">
         <div class="selected-mark">✓</div>
-        <img src="Juvenile.png"><p>Diseño 17</p>
+        <img src="Play.png"><p>Play</p>
       </div>
-<div class="item" onclick="toggleSeleccion(this, 'Diseño 18')">
+<div class="item" onclick="toggleSeleccion(this, 'Xbox')">
         <div class="selected-mark">✓</div>
-        <img src="Graffiti.png"><p>Diseño 18</p>
+        <img src="Xbox.png"><p>Xbox</p>
       </div>
-<div class="item" onclick="toggleSeleccion(this, 'Diseño 19')">
+<div class="item" onclick="toggleSeleccion(this, 'Kuromi')">
         <div class="selected-mark">✓</div>
-        <img src="Happytime.png"><p>Diseño 19</p>
+        <img src="Kuromi.png"><p>Kuromi</p>
       </div>
-<div class="item" onclick="toggleSeleccion(this, 'Diseño 20')">
+<div class="item" onclick="toggleSeleccion(this, 'Mariposa')">
         <div class="selected-mark">✓</div>
-        <img src="Rapper.png"><p>Diseño 20</p>
+        <img src="Mariposa.png"><p>Mariposa</p>
       </div>
-<div class="item" onclick="toggleSeleccion(this, 'Diseño 21')">
+<div class="item" onclick="toggleSeleccion(this, 'Chino')">
         <div class="selected-mark">✓</div>
-        <img src="Stronaut.png"><p>Diseño 21</p>
+        <img src="Chino.png"><p>Chino</p>
       </div>
-<div class="item" onclick="toggleSeleccion(this, 'Diseño 22')">
+<div class="item" onclick="toggleSeleccion(this, 'Pictures')">
         <div class="selected-mark">✓</div>
-        <img src="Summerday.png"><p>Diseño 22</p>
+        <img src="Pictures.png"><p>Pictures</p>
+      </div>
+<div class="item" onclick="toggleSeleccion(this, 'Juvenile')">
+        <div class="selected-mark">✓</div>
+        <img src="Juvenile.png"><p>Juvenile</p>
+      </div>
+<div class="item" onclick="toggleSeleccion(this, 'Graffiti')">
+        <div class="selected-mark">✓</div>
+        <img src="Graffiti.png"><p>Graffiti</p>
+      </div>
+<div class="item" onclick="toggleSeleccion(this, 'Happytime')">
+        <div class="selected-mark">✓</div>
+        <img src="Happytime.png"><p>Happytime</p>
+      </div>
+<div class="item" onclick="toggleSeleccion(this, 'Rapper')">
+        <div class="selected-mark">✓</div>
+        <img src="Rapper.png"><p>Rapper</p>
+      </div>
+<div class="item" onclick="toggleSeleccion(this, 'Stronaut')">
+        <div class="selected-mark">✓</div>
+        <img src="Stronaut.png"><p>Stronaut</p>
+      </div>
+<div class="item" onclick="toggleSeleccion(this, 'Summerday')">
+        <div class="selected-mark">✓</div>
+        <img src="Summerday.png"><p>Summerday</p>
       </div>
 <div class="item" onclick="toggleSeleccion(this, 'Diseño 23')">
         <div class="selected-mark">✓</div>
         <img src="Playgame.png"><p>Diseño 23</p>
       </div>
 
-<div class="item" onclick="toggleSeleccion(this, 'Diseño 24')">
+<div class="item" onclick="toggleSeleccion(this, 'Summervacation')">
         <div class="selected-mark">✓</div>
-        <img src="Summervacation.png"><p>Diseño 24</p>
+        <img src="Summervacation.png"><p>Summervacation</p>
       </div>
 
-<div class="item" onclick="toggleSeleccion(this, 'Diseño 25')">
+<div class="item" onclick="toggleSeleccion(this, 'Summervacation2')">
         <div class="selected-mark">✓</div>
-        <img src="Summervacation2.png"><p>Diseño 25</p>
+        <img src="Summervacation2.png"><p>Summervacation2</p>
       </div>
-<div class="item" onclick="toggleSeleccion(this, 'Diseño 26')">
+<div class="item" onclick="toggleSeleccion(this, 'Spiderman')">
         <div class="selected-mark">✓</div>
-        <img src="Spiderman.png"><p>Diseño 26</p>
+        <img src="Spiderman.png"><p>Spiderman</p>
       </div>
-<div class="item" onclick="toggleSeleccion(this, 'Diseño 27')">
+<div class="item" onclick="toggleSeleccion(this, 'Lucha')">
         <div class="selected-mark">✓</div>
-        <img src="Lucha.png"><p>Diseño 27</p>
+        <img src="Lucha.png"><p>Lucha</p>
       </div>
-<div class="item" onclick="toggleSeleccion(this, 'Diseño 28')">
+<div class="item" onclick="toggleSeleccion(this, 'Chucky')">
         <div class="selected-mark">✓</div>
-        <img src="Chucky.png"><p>Diseño 28</p>
+        <img src="Chucky.png"><p>Chucky</p>
       </div>
 
 
@@ -410,7 +506,6 @@ El tiempo de entrega es pasado mañana, contado desde el día de la confirmació
     <p>Seleccionar opción</p>
   </summary>
 
-  <!-- OPCIONES -->
   <div style="margin-top:10px;">
     <div class="item" onclick="abrirSabores(1)">
       <h3>1 Papita</h3>
@@ -423,7 +518,6 @@ El tiempo de entrega es pasado mañana, contado desde el día de la confirmació
     </div>
   </div>
 
-  <!-- SABORES -->
   <div id="sabores-papitas" style="display:none; margin-top:10px;">
     <div class="item" onclick="toggleSabor(this,'Doritos')">Doritos</div>
     <div class="item" onclick="toggleSabor(this,'Fritos')">Fritos</div>
@@ -435,12 +529,10 @@ El tiempo de entrega es pasado mañana, contado desde el día de la confirmació
   </div>
 
 
-  <!-- MENSAJE -->
   <p id="mensaje-papitas"
      style="display:none; color:#ff4d4d; font-weight:600; margin-top:8px;">
   </p>
 
-  <!-- CONTINUAR -->
   <button id="btn-continuar-papitas"
           class="btn-continuar"
           style="display:none;"
@@ -450,7 +542,6 @@ El tiempo de entrega es pasado mañana, contado desde el día de la confirmació
   </button>
 </details>
 
-<!-- ESTILO BOTÓN -->
 <style>
 .btn-continuar{
   width:100%;
@@ -471,7 +562,6 @@ El tiempo de entrega es pasado mañana, contado desde el día de la confirmació
 }
 </style>
 
-<!-- SCRIPT -->
 <script>
 let cantidadPapitas = 0;
 let seleccionadas = [];
@@ -576,7 +666,6 @@ function limpiarChecks(){
     <p>Seleccionar opción</p>
   </summary>
 
-  <!-- SABORES -->
   <div id="sabores-galletas" style="margin-top:10px;">
     <div class="item" onclick="toggleGalleta(this,'Chokis')">Chokis</div>
     <div class="item" onclick="toggleGalleta(this,'Arcoíris')">Arcoíris</div>
@@ -584,13 +673,11 @@ function limpiarChecks(){
     <div class="item" onclick="toggleGalleta(this,'Emperador Chocolate')">Emperador Chocolate</div>
   </div>
 
-  <!-- MENSAJE -->
   <p id="mensaje-galletas"
      style="display:none; color:#ff4d4d; font-weight:600; margin-top:8px;">
     Selecciona una galleta
   </p>
 
-  <!-- CONTINUAR -->
   <button id="btn-continuar-galletas"
           class="btn-continuar"
           style="display:none;"
@@ -679,13 +766,11 @@ function cerrarGalletas(){
 
   <div style="margin-top:10px;">
 
-    <!-- 1 paleta -->
     <div class="item" onclick="agregarAlCarrito('1 Paleta Tarrito', 5)">
       <h3>1 Paleta</h3>
       <p>$5.00</p>
     </div>
 
-    <!-- 3 paletas -->
     <div class="item" onclick="agregarAlCarrito('3 Paletas Tarrito', 10)">
       <h3>3 Paletas</h3>
       <p>$10.00</p>
@@ -730,8 +815,15 @@ const cartPopup=document.querySelector(".cart-popup");
 const cartItemsList=document.getElementById("cart-items-list");
 const totalDisplay=document.querySelector(".total");
 
+// --- FUNCIONES DE NAVEGACIÓN ---
 function abrirPines(){ ocultarTodo(); pines.style.display="block"; }
 function abrirSnacks(){ ocultarTodo(); snacks.style.display="block"; }
+
+// FUNCIÓN PARA EL ACCESO DIRECTO DEL POPUP
+function abrirPinesDesdePopup() {
+  document.getElementById('popup-sanvalentin-overlay').style.display='none';
+  abrirPines();
+}
 
 function abrirSubCatalogo(nombre, precio, limite){
   ocultarTodo();
@@ -812,9 +904,41 @@ document.querySelector(".whatsapp-btn").onclick=()=>{
   msg += `\nTotal: $${carrito.reduce((a,b)=>a+b.precio,0)}`;
   window.open("https://wa.me/524778052373?text="+encodeURIComponent(msg));
 };
+
+// ❤️ EFECTO CORAZONES WINDOW ONLOAD
+window.onload = function() {
+  const heartCount = 100;
+  const body = document.querySelector('body');
+  
+  for(let i = 0; i < heartCount; i++) {
+    const heart = document.createElement('div');
+    heart.className = 'heart-fall';
+    heart.innerHTML = '❤️';
+    
+    // Configuración aleatoria
+    const leftPos = Math.random() * 100;
+    const delay = Math.random() * 2;
+    const duration = 3 + Math.random() * 4;
+    const size = 15 + Math.random() * 20;
+    
+    heart.style.left = leftPos + '%';
+    heart.style.animationDelay = delay + 's';
+    heart.style.animationDuration = duration + 's';
+    heart.style.fontSize = size + 'px';
+    
+    body.appendChild(heart);
+    
+    // Limpieza automática
+    setTimeout(() => {
+      heart.remove();
+    }, (delay + duration) * 1000);
+  }
+};
 </script>
 </body>
 </html>
+
+
 
 
 
