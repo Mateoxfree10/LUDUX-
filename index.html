@@ -31,9 +31,27 @@ body{
 @keyframes float{50%{transform:translateY(-5px)}}
 @keyframes glow{50%{filter:drop-shadow(0 0 25px gold)}}
 .welcome{
-  color:var(--gold);
+  color:var(--black);
   font-size:1.6rem;
   margin-bottom:20px;
+text-align:center; /* 👈 esto lo centra */
+  line-height:1.5;   /* 👈 mejora el espacio entre líneas */
+
+animation:glowText 1.5s infinite alternate;
+}
+
+@keyframes glowText{
+  from{
+    text-shadow:
+      0 0 5px gold,
+      0 0 10px gold;
+  }
+  to{
+    text-shadow:
+      0 0 10px gold,
+      0 0 25px gold,
+      0 0 40px gold;
+  }
 }
 
 /* --- CATÁLOGO ESPACIOSO --- */
@@ -203,7 +221,12 @@ body{
 
 <div class="container">
   <img src="Ludux.png" class="logo">
-  <div class="welcome">👑 Bienvenid@ 💎</div>
+  <div class="welcome">👑 Bienvenid@ 💎
+<br>
+
+🔥 Pedidos abiertos HOY 🔥 <br>
+💎Todo listo para ti💎
+</div>
 
   <section id="inicio">
     <div class="promo-container">
@@ -813,8 +836,5 @@ document.querySelector(".whatsapp-btn").onclick=()=>{
 </script>
 </body>
 </html>
-
-
-
 
 
