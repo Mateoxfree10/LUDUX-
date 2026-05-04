@@ -1,4 +1,5 @@
 
+
 <html lang="es">
 <head>
 <meta charset="utf-8">
@@ -203,10 +204,80 @@ animation:glowText 1.5s infinite alternate;
   cursor:pointer;
 }
 #msg-error { color: #ff4444; margin-top: 10px; font-weight: bold; text-align: center; }
-</style>
+/* POPUP MUNDIAL */
+#popup-mundial{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background:rgba(0,0,0,0.8);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  z-index:999;
+}
+
+.popup-contenido{
+  position:relative;
+  width:80%;
+  max-width:350px;
+}
+
+.popup-contenido img{
+  width:100%;
+  border-radius:12px;
+}
+
+.cerrar-popup{
+  position:absolute;
+  top:-10px;
+  right:-10px;
+  background:red;
+  color:white;
+  border-radius:50%;
+  width:25px;
+  height:25px;
+  text-align:center;
+  cursor:pointer;
+  font-weight:bold;
+}
+
+/* SOBRES CAYENDO */
+.sobre{
+  position:fixed;
+  top:-50px;
+  width:70px;
+  animation:caer 4s linear forwards;
+  z-index:1000;
+}
+@keyframes caer {
+  0% {
+    transform: translateY(-50px) rotate(0deg);
+    opacity: 1;
+  }
+  25% {
+    transform: translateY(25vh) translateX(15px) rotate(90deg);
+  }
+  50% {
+    transform: translateY(50vh) translateX(-15px) rotate(180deg);
+  }
+  75% {
+    transform: translateY(75vh) translateX(10px) rotate(270deg);
+  }
+  100% {
+    transform: translateY(100vh) translateX(-10px) rotate(360deg);
+    opacity: 0;
+  }
+}</style>
 </head>
 <body>
-
+<div id="popup-mundial">
+  <div class="popup-contenido">
+    <span class="cerrar-popup" onclick="cerrarPopup()">✖</span>
+    
+    <img src="LuduxMundial.jpeg" id="popup-img" onclick="irAMundial()">  </div>
+</div>
 <button class="cart-icon">
   <img src="Carrito.png">
   <span class="cart-count">0</span>
@@ -221,11 +292,16 @@ animation:glowText 1.5s infinite alternate;
 
 <div class="container">
   <img src="Ludux.png" class="logo">
+
   <div class="welcome">👑 Bienvenid@ 💎
 <br>
 
 🔥 Pedidos abiertos HOY 🔥 <br>
 💎Todo listo para ti💎
+</div>
+<div class="letreros-nuevos">
+  <span>🔥 NUEVOS PRODUCTOS 🔥</span>
+  <span>🔥 NUEVOS PRODUCTOS 🔥</span>
 </div>
 
   <section id="inicio">
@@ -234,6 +310,11 @@ animation:glowText 1.5s infinite alternate;
         <img src="pines.png" style="max-width:100%; height:auto;">
         <h3>PINES</h3>
       </div>
+<div class="promo-item" onclick="abrirMundial()">
+  <img src="LuduxMundial.jpeg" 
+style="max-width:100%; height:auto;">
+  <h3>MUNDIAL</h3>
+</div>
       <div class="promo-item" onclick="abrirSnacks()">
         <img src="snacks.png" style="max-width:100%; height:auto;">        <h3>SNACKS</h3>
       </div>
@@ -490,6 +571,31 @@ El tiempo de entrega es pasado mañana, contado desde el día de la confirmació
   opacity:1;
   cursor:pointer;
 }
+.letreros-nuevos{
+  width:100%;
+  max-width:600px;
+  display:flex;
+  justify-content:space-between;
+  margin-bottom:15px;
+}
+
+.letreros-nuevos span{
+  font-size:0.9rem;
+  font-weight:bold;
+  color:#ffd700;
+  text-shadow:
+    0 0 5px gold,
+    0 0 10px gold,
+    0 0 20px gold;
+
+  animation:parpadeo 1s infinite alternate;
+}
+
+/* efecto brillante/parpadeo */
+@keyframes parpadeo{
+  from{ opacity:1; }
+  to{ opacity:0.5; }
+}
 </style>
 
 <!-- SCRIPT -->
@@ -675,15 +781,21 @@ function cerrarGalletas(){
 
   galletaSeleccionada = null;
 }
+
 </script>
 
+
+<div class="item" onclick="agregarAlCarrito('Muffins', 15)">
+    <img src="Muffins.png"style="max-width:100%; height:auto;">
+    <h3>Muffins</h3>
+    <p>$15.00</p>
+  </div>
 
 <div class="item" onclick="agregarAlCarrito('Mazapán Gigante', 12)">
     <img src="Mazapán.png"style="max-width:100%; height:auto;">
     <h3>Mazapán Gigante</h3>
     <p>$12.00</p>
   </div>
-
 
   <div class="item" onclick="agregarAlCarrito('Mamut Mini', 5)">
     <img src="Mamutmini.png"style="max-width:100%; height:auto;">
@@ -737,6 +849,37 @@ function cerrarGalletas(){
   
  </div>
   </section>
+<section id="mundial" style="display:none">
+  <button class="back-btn" onclick="volver()">⬅ Volver</button>
+
+  <div class="catalogo">
+
+<div class="item" onclick="agregarAlCarrito('5 Estampas Mundial
+sin repetir 🔥🔥', 15)">
+     <img src="Sobre.png" style="max-width:100%; height:auto;">
+  <h3>5 Estampas Mundial<br>
+sin repetir 🔥🔥</h3>
+      <p>$15</p>
+    </div>
+
+
+<div class="item" onclick="agregarAlCarrito('3 Estampas Mundial
+sin repetir 🔥🔥', 10)">
+<img src="Sobre.png" style="max-width:100%; height:auto;">
+ <h3>3 Estampas Mundial<br>
+sin repetir 🔥🔥</h3>
+      <p>$10</p>
+    </div>
+
+   <div class="item" onclick="agregarAlCarrito('1 Estampa Mundial
+sin repir', 30)">
+<img src="Sobre.png" style="max-width:100%; height:auto;">
+ <h3>1 Estampa Mundial</h3>
+      <p>$4</p>
+    </div>
+
+  </div>
+</section>
 </div>
 
 <script>
@@ -753,6 +896,8 @@ const totalDisplay=document.querySelector(".total");
 
 function abrirPines(){ ocultarTodo(); pines.style.display="block"; }
 function abrirSnacks(){ ocultarTodo(); snacks.style.display="block"; }
+function abrirMundial(){ ocultarTodo();document.getElementById("mundial").style.display = "block";
+}
 
 function abrirSubCatalogo(nombre, precio, limite){
   ocultarTodo();
@@ -770,8 +915,11 @@ function abrirSubCatalogo(nombre, precio, limite){
 function volver(){ ocultarTodo(); inicio.style.display="block"; }
 function volverAPines(){ ocultarTodo(); pines.style.display="block"; }
 function ocultarTodo(){
-  inicio.style.display="none"; pines.style.display="none";
-  snacks.style.display="none"; document.getElementById('sub-catalogo-pines').style.display="none";
+  inicio.style.display="none"; 
+  pines.style.display="none";
+  snacks.style.display="none"; 
+  document.getElementById('sub-catalogo-pines').style.display="none";
+  document.getElementById("mundial").style.display = "none"; // 👈 ESTA LÍNEA
 }
 
 function toggleSeleccion(elemento, nombreDiseno) {
@@ -833,8 +981,31 @@ document.querySelector(".whatsapp-btn").onclick=()=>{
   msg += `\nTotal: $${carrito.reduce((a,b)=>a+b.precio,0)}`;
   window.open("https://wa.me/524778052373?text="+encodeURIComponent(msg));
 };
+function cerrarPopup(){
+  document.getElementById("popup-mundial").style.display = "none";
+}
+
+function irAMundial(){
+  cerrarPopup();
+  abrirMundial();
+}
+
+/* GENERAR SOBRES CAYENDO */
+function crearSobres(){
+  for(let i=0;i<50;i++){
+    let sobre = document.createElement("img");
+    sobre.src = "Sobre.png";
+
+    sobre.classList.add("sobre");
+    sobre.style.width = (Math.random() * 7 + 6) + "vw";
+    sobre.style.left = Math.random() * 100 + "vw";
+    sobre.style.animationDuration = (5 + Math.random()*5) + "s";
+
+    document.body.appendChild(sobre);
+  }
+}
+
+window.onload = crearSobres;
 </script>
 </body>
 </html>
-
-
